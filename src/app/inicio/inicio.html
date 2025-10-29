@@ -1,0 +1,38 @@
+<div class="login-container">
+  <h2>Iniciar sesión</h2>
+
+  <form (ngSubmit)="iniciarSesion()" #loginForm="ngForm">
+    <div class="form-group">
+      <label for="email">Correo electrónico</label>
+      <input
+        type="email"
+        id="email"
+        name="email"
+        required
+        [(ngModel)]="email"
+        placeholder="ejemplo@correo.com"
+      />
+    </div>
+
+    <div class="form-group">
+      <label for="password">Contraseña</label>
+      <input
+        type="password"
+        id="password"
+        name="password"
+        required
+        [(ngModel)]="password"
+        placeholder="********"
+      />
+    </div>
+
+    <button type="submit" [disabled]="!loginForm.valid">Ingresar</button>
+
+    <p class="extra-text">
+      ¿No tienes cuenta?
+      <a href="https://accounts.google.com/SignUp?continue=https://myaccount.google.com%3Futm_source%3Daccount-marketing-page%26utm_medium%3Dcreate-account-button"
+         target="_blank" 
+         rel="noopener noreferrer">Regístrate aquí</a>
+    </p>
+  </form>
+</div>
