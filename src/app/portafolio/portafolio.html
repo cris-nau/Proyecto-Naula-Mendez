@@ -1,0 +1,42 @@
+<!-- header.component.html -->
+<header class="main-header">
+  <div class="logo">
+    <img src="assets/logos_mantra.png" width="150px">
+  </div>
+  <nav>
+    <button class="btn-logout" (click)="cerrarSesion()">Cerrar Sesión</button>
+  </nav>
+</header>
+
+<main class="page-wrapper">
+
+  <div class="portada">
+    <div class="contenido-portada">
+      <h1>Bienvenido a <span>mantra</span></h1>
+      <p>
+        ¿Buscas ayuda profesional? Aquí puedes encontrar programadores disponibles para asesorías personalizadas. Explora sus portafolios, conoce sus habilidades y agenda una sesión según tu necesidad.
+      </p>
+      <p>Encuentra al programador ideal para tu proyecto o consulta</p>
+      
+      <button (click)="explorar()">Ver programadores disponibles</button>
+    </div>
+  </div>
+
+<section class="info-seccion">
+  <h2>¿Cómo funciona mantra?</h2>
+  <div class="info-grid">
+    <div class="info-card">
+      <h3>💻 Programadores disponibles</h3>
+      <p>Explora perfiles y portafolios de programadores listos para ayudarte.</p>
+    </div>
+    <div class="info-card">
+      <h3>📅 Solicita asesoría</h3>
+      <p>Elige fecha y hora, añade un comentario opcional y envía tu solicitud de asesoría.</p>
+    </div>
+    <div class="info-card">
+      <h3>⚙️ Panel de Asesorías</h3>
+      <p>Los programadores gestionan sus solicitudes y publican sus portafolios fácilmente.</p>
+    </div>
+  </div>
+</section>
+</main>

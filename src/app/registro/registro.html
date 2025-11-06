@@ -1,7 +1,7 @@
 <div class="login-container">
-  <h2>Iniciar sesión</h2>
-  
-  <form (ngSubmit)="iniciarSesion()" #loginForm="ngForm">
+  <h2>Registrar</h2>
+
+  <form (ngSubmit)="registrarCuenta()" #loginForm="ngForm">
     <div class="form-group">
       <label for="email">Correo electrónico</label>
       <input
@@ -26,20 +26,12 @@
       />
     </div>
 
-    <button type="submit" [disabled]="!loginForm.valid">Ingresar</button>
+    <button type="submit" [disabled]="!loginForm.valid">Registrar</button>
+
+    <p>¿Ya tienes cuenta?
+      <a (click)="irLogin()" style="cursor:pointer;">Inicia sesión aquí</a>
+    </p>
   </form>
 
   <br>
-  <button (click)="loginGoogle()" class="google-button">
-    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/Google_%22G%22_logo.svg/1200px-Google_%22G%22_logo.svg.png" alt="Google logo" />
-     Google
-  </button>
-
-  
-  <p class="extra-text">
-    ¿No tienes cuenta?
-    <a (click)="irRegistro()" style="cursor:pointer;">
-       Regístrate aquí
-    </a>
-  </p>
 </div>
