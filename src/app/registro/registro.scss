@@ -1,17 +1,23 @@
+main {
+  padding: 2rem 0 8.5rem;
+  background-image: radial-gradient(at 20% 70%, rgba(65, 117, 152, 0.711) 0%, transparent 50%),
+                    radial-gradient(at 80% 30%, rgba(211, 237, 128, 0.622) 0%, transparent 50%);
+}
+
 .login-container {
-  width: 360px;
+  width: 390px;
   margin: 100px auto;
   padding: 40px;
-  background: rgba(255, 255, 255, 0.15);
+  background: #ffffff35;
   backdrop-filter: blur(12px);
   border-radius: 16px;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
   text-align: center;
-  border: 1px solid rgba(255, 255, 255, 0.25);
+  border: 1px solid var(--color-border);
   animation: fadeIn 0.7s ease;
 
   h2 {
-    color: #ffffff;
+    color: var(--color-text-light);
     font-weight: 700;
     margin-bottom: 25px;
     letter-spacing: 0.5px;
@@ -26,15 +32,15 @@
       font-weight: 600;
       font-size: 14px;
       margin-bottom: 6px;
-      color: #b0cce6bb;
+      color: var(--color-text-medium);
     }
 
     input {
       font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
-      width: 93%;
+      width: 100%;
       padding: 10px 12px;
-      color : #818181;
-      border: 1px solid #ccc;
+      color : var(--color-text-medium);
+      border: 1px solid var(--color-border);
       border-radius: 8px;
       font-size: 15px;
       background-color: rgba(255, 255, 255, 0.9);
@@ -42,22 +48,26 @@
 
       &:focus {
         outline: none;
-        border-color: #007bff;
-        box-shadow: 0 0 4px rgba(0, 123, 255, 0.5);
+        border-color: var(--color-primary);
+        box-shadow: 0 0 4px var(--color-primary);
         background-color: #fff;
       }
     }
   }
 
+  img {
+    width: 13px;
+  }
+
   p {
-    color: #b0cce6bb;
+    color: var(--color-text-medium);
   }
 
   button {
     font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
     width: 100%;
     padding: 12px;
-    background: rgba(255, 255, 255, 0.2);
+    background: var(--color-accent);
     border: none;
     border-radius: 8px;
     color: #ffffff;
@@ -70,7 +80,7 @@
     box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1); 
 
     &:hover {
-      background: rgba(255, 255, 255, 0.3); 
+      background: var(--color-primary);
       transform: scale(1.02);
     }
 
@@ -79,7 +89,6 @@
     }
   }
 
-  // Pequeño texto debajo del botón
   .extra-links {
     margin-top: 18px;
     font-size: 13px;
@@ -105,4 +114,3 @@
     transform: translateY(0);
   }
 }
-

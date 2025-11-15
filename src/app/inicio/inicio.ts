@@ -30,7 +30,7 @@
       }
       try {
         const userCredential = await signInWithEmailAndPassword(auth, this.email, this.password);
-        this.router.navigate(['/portafolio']);
+        this.router.navigate(['/portafolioProg']);
       } catch (error: any) {
         alert(`Error al iniciar sesión: ${error.message}`);
       }
@@ -66,7 +66,7 @@
           rol: rolAsignado
         });
       }
-      this.router.navigate(['/portafolio']);
+      this.router.navigate(['/portafolioProg']);
     }
 
     irRegistro() {

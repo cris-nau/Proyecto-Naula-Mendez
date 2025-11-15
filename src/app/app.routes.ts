@@ -5,7 +5,7 @@ import { Portafolio } from './portafolio/portafolio';
 import { PortafolioProg } from './portafolio-prog/portafolio-prog';
 
 export const routes: Routes = [
-  { path: '', component: Inicio },
+  { path: '', component:  Portafolio},
   { path: 'inicio', component: Inicio },
   { path: 'registrar', component: Registro },
   { path: 'portafolio', component: Portafolio },

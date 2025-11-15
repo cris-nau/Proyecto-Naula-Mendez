@@ -1,42 +1,135 @@
-<!-- header.component.html -->
-<header class="main-header">
-  <div class="logo">
-    <img src="assets/logos_mantra.png" width="150px">
+<header class="cabecera">
+  <div class="cabecera-inner contenedor">
+    <div class="logo">
+      <a (click)="inicio()">
+        <span>M</span><span class="destacado">a</span>ntra
+      </a>
+    </div>
+
+    <nav>
+      <button class="boton" (click)="iniciarSesion()">Iniciar Sesión</button>
+    </nav>
   </div>
-  <nav>
-    <button class="btn-logout" (click)="cerrarSesion()">Cerrar Sesión</button>
-  </nav>
 </header>
 
-<main class="page-wrapper">
+<main>
+  <section class="hero">
+    <div class="hero-inner">
+      <div class="contenido-hero">
+        <h1 class="titulo-hero">
+          Bienvenido a <span class="acento-hero">Mantra</span>, la red de expertos.
+        </h1>
+        <p class="subtitulo-hero-1">
+          ¿Buscas ayuda profesional? Aquí puedes encontrar programadores disponibles para asesorías personalizadas. Explora sus portafolios, conoce sus habilidades y agenda una sesión según tu necesidad.
+        </p>
+        <p class="subtitulo-hero-2">
+          Encuentra al programador ideal para tu proyecto o consulta.
+        </p>
 
-  <div class="portada">
-    <div class="contenido-portada">
-      <h1>Bienvenido a <span>mantra</span></h1>
-      <p>
-        ¿Buscas ayuda profesional? Aquí puedes encontrar programadores disponibles para asesorías personalizadas. Explora sus portafolios, conoce sus habilidades y agenda una sesión según tu necesidad.
-      </p>
-      <p>Encuentra al programador ideal para tu proyecto o consulta</p>
-      
-      <button (click)="explorar()">Ver programadores disponibles</button>
+        <button class="boton-cta" (click)="iniciarSesion()">
+          <i data-lucide="search" class="icono icono-buscar"></i>
+          <span>Ver programadores disponibles</span>
+        </button>
+      </div>
+      <div class="gif-container">
+        <img src="/src/assets/lluvia-de-meteoros-unscreen.gif">
+      </div>
     </div>
-  </div>
+  </section>
 
-<section class="info-seccion">
-  <h2>¿Cómo funciona mantra?</h2>
-  <div class="info-grid">
-    <div class="info-card">
-      <h3>💻 Programadores disponibles</h3>
-      <p>Explora perfiles y portafolios de programadores listos para ayudarte.</p>
+  <section class="informacion">
+    <div class="contenedor">
+      <h2 class="titulo">
+        ¿Cómo funciona <span class="texto-destacado">Mantra</span>?
+      </h2>
+
+      <div class="grid-info">
+        <article class="tarjeta">
+          <div class="icono-wrap bg-claro">
+            <i data-lucide="monitor" class="icono monitor"></i>
+          </div>
+          <h2 class="titulo-tarjeta">Programadores disponibles</h2>
+          <p class="texto-tarjeta">
+            Explora perfiles y portafolios de programadores expertos listos para ayudarte con tus desafíos de código.
+          </p>
+        </article>
+
+        <article class="tarjeta">
+          <div class="icono-wrap bg-claro">
+            <i data-lucide="calendar" class="icono calendario"></i>
+          </div>
+          <h2 class="titulo-tarjeta">Solicita asesoría</h2>
+          <p class="texto-tarjeta">
+            Elige fecha y hora, añade un comentario sobre tu necesidad y envía tu solicitud de asesoría en segundos.
+          </p>
+        </article>
+
+        <article class="tarjeta">
+          <div class="icono-wrap bg-claro">
+            <i data-lucide="layout-dashboard" class="icono panel"></i>
+          </div>
+          <h2 class="titulo-tarjeta">Panel de Gestión</h2>
+          <p class="texto-tarjeta">
+            Los programadores gestionan sus horarios, solicitudes y publican sus portafolios fácilmente desde un panel intuitivo.
+          </p>
+        </article>
+      </div>
     </div>
-    <div class="info-card">
-      <h3>📅 Solicita asesoría</h3>
-      <p>Elige fecha y hora, añade un comentario opcional y envía tu solicitud de asesoría.</p>
+  </section>
+
+  <section class="detalle">
+    <div class="contenedor">
+
+      <div class="item grid-2">
+        <div class="visual orden-2">
+          <div class="caja bg-oscuro">
+            <i data-lucide="message-square" class="icono mensaje"></i>
+          </div>
+        </div>
+        <div class="texto orden-1">
+          <h2 class="titulo-item">Asesorías personalizadas</h2>
+          <p class="texto-item">
+            Recibe ayuda en tiempo real de expertos en distintas áreas de la programación. Desde desarrollo web (React, Angular) hasta machine learning y DevOps. Tu solución a la mano.
+          </p>
+        </div>
+      </div>
+
+      <div class="item grid-2">
+        <div class="visual orden-1">
+          <div class="caja bg-acento">
+            <i data-lucide="users" class="icono usuarios"></i>
+          </div>
+        </div>
+        <div class="texto orden-2">
+          <h2 class="titulo-item">Colaboración y comunidad</h2>
+          <p class="texto-item">
+            Forma parte de una red activa donde programadores comparten conocimiento, experiencias, y consejos profesionales. Conéctate con el ecosistema global de desarrollo.
+          </p>
+        </div>
+      </div>
+
+      <div class="item grid-2">
+        <div class="visual orden-2">
+          <div class="caja bg-oscuro">
+            <i data-lucide="trending-up" class="icono tendencia"></i>
+          </div>
+        </div>
+        <div class="texto orden-1">
+          <h2 class="titulo-item">Crecimiento profesional</h2>
+          <p class="texto-item">
+            Aprende nuevas habilidades de la mano de mentores, mejora tu portafolio y expande tus oportunidades laborales con la experiencia de los mejores.
+          </p>
+        </div>
+      </div>
+
     </div>
-    <div class="info-card">
-      <h3>⚙️ Panel de Asesorías</h3>
-      <p>Los programadores gestionan sus solicitudes y publican sus portafolios fácilmente.</p>
-    </div>
-  </div>
-</section>
+  </section>
 </main>
+
+<footer class="pie">
+  <div class="contenedor centro texto-gris espacio-y-2">
+    <p class="pequeno">M<span class="destacado">a</span>ntra</p>
+    <p class="muy-pequeno">&copy; <span id="currentYear"></span> Mantra. Todos los derechos reservados.</p>
+    <p class="muy-pequeno">Desarrollado con pasión por la comunidad de programación.</p>
+  </div>
+</footer>
