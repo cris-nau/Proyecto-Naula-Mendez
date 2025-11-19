@@ -1,0 +1,63 @@
+<header class="cabecera">
+  <div class="cabecera-inner contenedor">
+    <div class="logo">
+      <a (click)="inicio()">
+        <span>M</span><span class="destacado">a</span>ntra
+      </a>
+    </div>
+    <nav>
+      <button class="boton" (click)="cerrarSesion()">Cerrar secion</button>
+    </nav>
+  </div>
+</header>
+
+<div class="sidebar"> 
+    <div class="sidebar-header"><h3>Funciones</h3></div>
+    <br>
+    <ul class="sidebar-menu">
+        <a (click)="portafolios()"><li><i data-lucide="plus" class="icono"></i></li></a>
+        <div *ngIf="mostrarFuncionesPort">
+            <div *ngIf="!portAca"><a (click)="portafoliosAca()"><li><i data-lucide="microscope" class="icono"></i></li></a></div>
+            <div *ngIf="!portProf"><a (click)="portafoliosProf()"><li><i data-lucide="briefcase" class="icono"></i></li></a></div>
+        </div>
+        <a><li><i data-lucide="minus" class="icono-barra"></i></li></a>
+        <div *ngIf="portAca">
+            <a (click)="portafoliosAca()"><li><i data-lucide="microscope" class="icono"></i></li></a>
+        </div>
+        <div *ngIf="portProf">
+            <a (click)="portafoliosProf()"><li><i data-lucide="briefcase" class="icono"></i></li></a>
+        </div>
+        <a (click)="perfil()"><li id="perfil"><i data-lucide="user" class="icono-set"></i></li></a>
+    </ul>
+</div>
+
+<div class="funciones">
+  <div *ngIf="mostrarContenidoBuscar">
+    <h1>Perfil Personal</h1>
+    <i data-lucide="settings" class="icono-set-2" (click)="alternarEdicion()"></i>
+    
+    <div *ngIf="modoEdicion">
+        <img [src]="datosUsuario?.foto" class="foto-perfil">
+        
+        <a>Nombre</a>
+        <input type="text" [(ngModel)]="datosUsuario.nombre"> 
+        <a>Apellido</a>
+        <input type="text" [(ngModel)]="datosUsuario.apellido">
+        
+        <a>Email</a>
+        <input type="text" [value]="datosUsuario?.email" readonly>
+        <button (click)="guardarPerfil()">Guardar Cambios</button>
+    </div>
+
+    <div *ngIf="!modoEdicion">
+        <img [src]="datosUsuario?.foto" class="foto-perfil-small">
+        
+        <a class="nombre-completo">{{ datosUsuario?.nombre }} {{ datosUsuario?.apellido }}</a>
+        <p class="email-visual">{{ datosUsuario?.email }}</p>
+        
+    </div>
+
+    <div *ngIf="mostrarContenido" class="grid-cards">
+        </div>
+  </div>
+</div>

@@ -5,7 +5,9 @@
         <span>M</span><span class="destacado">a</span>ntra
       </a>
     </div>
-
+    <div>
+      <a>Bienvendio {{ datosUsuario?.nombreCompleto }}</a>
+    </div>
     <nav>
       <button class="boton" (click)="cerrarSesion()">Cerrar secion</button>
     </nav>
@@ -16,24 +18,41 @@
     <div class="sidebar-header"><h3>Funciones</h3></div>
     <br>
     <ul class="sidebar-menu">
-        <a (click)="buscar()"><li><i data-lucide="search" class="icono"></i></li></a>
-        <br>
+        <a (click)="funcionBuscar()"><li><i data-lucide="search" class="icono"></i></li></a>
         <a><li><i data-lucide="file-text" class="icono"></i></li></a>
         <a><li><i data-lucide="minus" class="icono-barra"></i></li></a>
         <a><li><i data-lucide="message-circle" class="icono"></i></li></a>
-        <br>
-        <br>
-        <br>
-        <br>
-        <br>
-        <br>
-        <br>
-        <br>
-        <br>
-        <br>
-        <br>
-        <br>
-        <br>
         <a><li><i data-lucide="info" class="icono-set"></i></li></a>
     </ul>
+</div>
+
+<div class="funciones">
+  <div *ngIf="mostrarContenidoBuscar">
+    <form #loginForm="ngForm">
+      <div class="form-group">
+        <input
+          type="text"
+          id="text"
+          name="text"
+          required
+          [(ngModel)]="text"
+          (ngModelChange)="buscar()"
+          placeholder="Busca portafolios"
+        />
+      </div>
+    </form>
+    <div *ngIf="mostrarContenido" class="grid-cards">
+        <h3>Resultados ({{ resultados.length }})</h3>
+
+        <div *ngFor="let item of resultados" class="tarjeta-portafolio">
+            <img [src]="item.foto" alt="Foto de {{ item.nombreCompleto }}">
+            <h4>{{ item.nombreCompleto }}</h4>
+            <p>Email: {{ item.email }}</p>
+        </div>
+
+        <div *ngIf="resultados.length === 0">
+            <p>No se encontraron portafolios.</p>
+        </div>
+    </div>
+  </div>
 </div>

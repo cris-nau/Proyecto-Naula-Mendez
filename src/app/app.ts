@@ -9,6 +9,7 @@ import { routes } from './app.routes';
   imports: [RouterOutlet],
   template: `<router-outlet></router-outlet>`
 })
+
 export class App {
   
 }
