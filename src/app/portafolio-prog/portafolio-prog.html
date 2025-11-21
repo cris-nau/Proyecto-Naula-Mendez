@@ -45,9 +45,9 @@
         <h3>Resultados ({{ resultados.length }})</h3>
 
         <div *ngFor="let item of resultados" class="tarjeta-portafolio">
-            <img [src]="item.foto" alt="Foto de {{ item.nombreCompleto }}">
-            <h4>{{ item.nombreCompleto }}</h4>
-            <p>Email: {{ item.email }}</p>
+            <img [src]="item.foto" alt="Foto de {{ item.nombre }}">
+            <h4>{{ item.nombre }}</h4>
+            <p>Contacto: {{ item.contacto }}</p>
         </div>
 
         <div *ngIf="resultados.length === 0">

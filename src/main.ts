@@ -9,7 +9,7 @@ import { firebaseConfig } from './app/firebase-config';
 bootstrapApplication(App, {
   providers: [
     provideFirebaseApp(() => initializeApp(firebaseConfig)), 
-    provideFirestore(() => getFirestore()),       
+    provideFirestore(() => getFirestore()),     
     provideRouter(routes)
   ]
 }).catch(err => console.error(err));

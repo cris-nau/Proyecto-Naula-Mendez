@@ -32,13 +32,81 @@
 </div>
 
 <div class="funciones">
+  <div *ngIf="portafolioProgramador">
+    <div class="sin-contenido">
+      <div class="datosPersonales">
+        <img [src]="datosProg?.foto" class="foto-perfil-p">
+        <div class="conf" (click)="alternarEdicionPort()"><i data-lucide="settings" class="icono-set-2"></i></div>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <a class="nombre-completo">{{ datosProg?.nombre }}</a>
+        <br>
+        <div class="info-general">
+          <br>
+          <a class="nombre-completo">Especialidad: {{ datosProg?.especialidad }}</a>
+          <br>
+          <br>
+          <a class="nombre-completo">Contacto: {{ datosProg?.contacto }}</a>
+          <br>
+          <br>
+          Redes:
+          <br>
+          <div *ngFor="let r of datosProg?.redes_sociales; let i = index">
+            <i [attr.data-lucide]="r.icono" class="redes_sociales_icono"></i>
+            <a [href]="r.url" target="_blank" rel="noopener noreferrer">
+              {{ r.nombre }}
+            </a>
+          </div>
+        </div>
+        <br>
+      </div>
+    </div>
+    <div *ngIf="!modoEdicionGeneral">
+      <div class="datosGenerales">
+        <div class="datosCambiar">
+          <a>Nombre: <input type="text" [(ngModel)]="datosProg.nombre"></a>
+          <br>
+          <a>Especialidad: <input type="text" [(ngModel)]="datosProg.especialidad"></a>
+          <br>
+          <a>Contacto: <input type="text" [(ngModel)]="datosProg.contacto"></a>
+          <br>
+          <a>Redes sociales:
+          <select [(ngModel)]="redSocial.icono" name="icono">
+            <option value="" disabled selected>Selecciona una red social</option>
+            <option value="instagram">Instagram</option>
+            <option value="github">GitHub</option>
+            <option value="linkedin">Linkedin</option>
+            <option value="facebook">Facebook</option>
+          </select>
+          </a>
+          <input type="text" placeholder="Nombre" [(ngModel)]="redSocial.nombre">
+          <input type="text" placeholder="URL" [(ngModel)]="redSocial.url">
+          <br> 
+          <a>Descripcion: <textarea [(ngModel)]="datosProg.descripcion" maxlength="500"></textarea></a>
+          <br>
+          <button (click)="agregarRed()">Guardar</button>
+        </div>
+      </div>
+    </div>
+    <div *ngIf="modoEdicionGeneral">
+      <div class="datosGenerales">
+        <a class="nombre-completo">Descripcion:</a>
+        <br>
+        <a>{{ datosProg?.descripcion }}</a>
+      </div>
+    </div>
+  </div>
+
   <div *ngIf="mostrarContenidoBuscar">
     <h1>Perfil Personal</h1>
     <i data-lucide="settings" class="icono-set-2" (click)="alternarEdicion()"></i>
     
     <div *ngIf="modoEdicion">
         <img [src]="datosUsuario?.foto" class="foto-perfil">
-        
+
         <a>Nombre</a>
         <input type="text" [(ngModel)]="datosUsuario.nombre"> 
         <a>Apellido</a>
@@ -49,15 +117,22 @@
         <button (click)="guardarPerfil()">Guardar Cambios</button>
     </div>
 
-    <div *ngIf="!modoEdicion">
-        <img [src]="datosUsuario?.foto" class="foto-perfil-small">
-        
+    <div *ngIf="!modoEdicion" class="sin-contenido">
+        <img [src]="datosUsuario?.foto" class="foto-perfil">
+        <a>Nombre</a>
+        <br>
         <a class="nombre-completo">{{ datosUsuario?.nombre }} {{ datosUsuario?.apellido }}</a>
-        <p class="email-visual">{{ datosUsuario?.email }}</p>
-        
+        <br>
+        <a>Email</a>
+        <p class="email-visual">{{ datosUsuario?.email }}</p> 
     </div>
+  </div>
 
-    <div *ngIf="mostrarContenido" class="grid-cards">
-        </div>
+  <div *ngIf="mostrarPortAca">
+    <h1>Portafolios Academicos</h1>
+  </div>
+
+  <div *ngIf="mostrarPortProf">
+    <h1>Portafolios Profesionales</h1>
   </div>
 </div>

@@ -8,7 +8,7 @@
     signInWithPopup
   } from "firebase/auth";
   import { Router } from '@angular/router';
-  import { Firestore, doc, setDoc, docData } from '@angular/fire/firestore';
+  import { Firestore, doc, setDoc, docData, getDoc } from '@angular/fire/firestore';
   import { firstValueFrom } from 'rxjs';
   import { FirestoreModule } from '@angular/fire/firestore';
 
@@ -57,6 +57,7 @@
       if (!email) return;
 
       const userRef = doc(this.firestore, "usuarios", uid);
+      const userProg = doc(this.firestore, "programadores", uid);
 
       let userSnap: any = null;
       try {
@@ -67,7 +68,7 @@
 
       let rolAsignado = "";
 
-          if (!userSnap) {
+      if (!userSnap) {
             rolAsignado = "";
 
           const displayName = user.displayName || "";
@@ -83,9 +84,17 @@
             foto: user.photoURL || null,
             rol: rolAsignado
           });
+
+          try {
+            userSnap = await firstValueFrom(docData(userRef, { idField: 'id' }));
+          } catch {
+            userSnap = null;
+          }
         }else {
             rolAsignado = userSnap.rol;
         }
+      
+      rolAsignado = userSnap?.rol || "";
 
       switch (rolAsignado) {
         case "admin":
@@ -93,6 +102,17 @@
           break;
 
         case "programador":
+          const portafolioSnap = await getDoc(userProg);
+          if (!portafolioSnap.exists()) {
+            await setDoc(userProg, {
+              nombre: user.displayName || "",
+              foto: user.photoURL || null,
+              contacto: "",
+              descripcion:"",
+              especialidad: "",
+              redes_sociales: [],
+            });
+          }
           this.router.navigate(['/programador']);
           break;
 

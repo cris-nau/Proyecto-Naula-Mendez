@@ -13,9 +13,9 @@ import { FirestoreModule } from '@angular/fire/firestore';
 import { firstValueFrom } from 'rxjs';
 
 interface PortafolioItem {
-  nombreCompleto: string;
+  nombre: string;
   foto: string;
-  email: string;
+  contacto: string;
 }
 
 @Component({
@@ -47,7 +47,7 @@ export class PortafolioProg implements OnInit, OnDestroy, AfterViewInit{
   ){}
 
   ngOnInit(): void {
-    const itemsCollection = collection(this.firestore, 'portafolioAca');
+    const itemsCollection = collection(this.firestore, 'programadores');
     this.items = collectionData(itemsCollection) as Observable<PortafolioItem[]>;
     this.obtenerUsuarioActual();
     this.obtenerDatosUsuario();
@@ -113,8 +113,8 @@ export class PortafolioProg implements OnInit, OnDestroy, AfterViewInit{
   buscar() {
     const texto = this.text.toLowerCase().trim();
     this.resultados = this.portafoliosFirebase.filter(item =>
-      item.nombreCompleto.toLowerCase().includes(texto) ||
-      item.email.toLowerCase().includes(texto)
+      item.nombre.toLowerCase().includes(texto) ||
+      item.contacto.toLowerCase().includes(texto)
     );
   }
 
