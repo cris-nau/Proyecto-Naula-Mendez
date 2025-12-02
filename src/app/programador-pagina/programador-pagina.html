@@ -12,127 +12,379 @@
 </header>
 
 <div class="sidebar"> 
-    <div class="sidebar-header"><h3>Funciones</h3></div>
-    <br>
-    <ul class="sidebar-menu">
-        <a (click)="portafolios()"><li><i data-lucide="plus" class="icono"></i></li></a>
-        <div *ngIf="mostrarFuncionesPort">
-            <div *ngIf="!portAca"><a (click)="portafoliosAca()"><li><i data-lucide="microscope" class="icono"></i></li></a></div>
-            <div *ngIf="!portProf"><a (click)="portafoliosProf()"><li><i data-lucide="briefcase" class="icono"></i></li></a></div>
-        </div>
-        <a><li><i data-lucide="minus" class="icono-barra"></i></li></a>
-        <div *ngIf="portAca">
+  <div class="sidebar-header"><h3>Funciones</h3></div>
+  <br>
+  <ul class="sidebar-menu">
+    <a (click)="portafolios()"><li><i data-lucide="plus" class="icono"></i></li></a>
+
+    @if (mostrarFuncionesPort) {
+      <div>
+        @if (!portAca) {
+          <div>
             <a (click)="portafoliosAca()"><li><i data-lucide="microscope" class="icono"></i></li></a>
-        </div>
-        <div *ngIf="portProf">
+          </div>
+        }
+
+        @if (!portProf) {
+          <div>
             <a (click)="portafoliosProf()"><li><i data-lucide="briefcase" class="icono"></i></li></a>
-        </div>
-        <a (click)="perfil()"><li id="perfil"><i data-lucide="user" class="icono-set"></i></li></a>
-    </ul>
+          </div>
+        }
+      </div>
+    }
+
+    <a><li><i data-lucide="minus" class="icono-barra"></i></li></a>
+
+    @if (portAca) {
+      <div>
+        <a (click)="portafoliosAca()"><li><i data-lucide="microscope" class="icono"></i></li></a>
+      </div>
+    }
+
+    @if (portProf) {
+      <div>
+        <a (click)="portafoliosProf()"><li><i data-lucide="briefcase" class="icono"></i></li></a>
+      </div>
+    }
+
+    <a (click)="mensajes()"><li><i data-lucide="message-circle" class="icono"></i></li></a>
+    <a (click)="perfil()"><li id="perfil"><i data-lucide="user" class="icono-set"></i></li></a>
+  </ul>
 </div>
 
 <div class="funciones">
-  <div *ngIf="portafolioProgramador">
-    <div class="sin-contenido">
-      <div class="datosPersonales">
-        <img [src]="datosProg?.foto" class="foto-perfil-p">
-        <div class="conf" (click)="alternarEdicionPort()"><i data-lucide="settings" class="icono-set-2"></i></div>
-        <br>
-        <br>
-        <br>
-        <br>
-        <br>
-        <a class="nombre-completo">{{ datosProg?.nombre }}</a>
-        <br>
-        <div class="info-general">
+
+  @if (portafolioProgramador) {
+    <div>
+      <div class="sin-contenido">
+        <div class="datosPersonales">
+          <img [src]="datosProg.foto" class="foto-perfil-p">
+          <div class="conf" (click)="alternarEdicionPort()"><i data-lucide="settings" class="icono-set-2"></i></div>
+          <br><br><br><br><br>
+          <a class="nombre-completo">{{ datosProg.nombre }}</a>
           <br>
-          <a class="nombre-completo">Especialidad: {{ datosProg?.especialidad }}</a>
+
+          <div class="info-general">
+            <br>
+            <a class="nombre-completo">Especialidad: {{ datosProg.especialidad }}</a>
+            <br><br>
+            <a class="nombre-completo">Contacto: {{ datosProg.contacto }}</a>
+            <br><br>
+            Redes:
+            <br>
+
+            @for (r of datosProg.redes_sociales; track r.icono; let i = $index) {
+              <div>
+                <i [attr.data-lucide]="r.icono" class="redes_sociales_icono"></i>
+                <a [href]="r.url" target="_blank" rel="noopener noreferrer">
+                  {{ r.nombre }}
+                </a>
+              </div>
+            }
+          </div>
+
           <br>
-          <br>
-          <a class="nombre-completo">Contacto: {{ datosProg?.contacto }}</a>
-          <br>
-          <br>
-          Redes:
-          <br>
-          <div *ngFor="let r of datosProg?.redes_sociales; let i = index">
-            <i [attr.data-lucide]="r.icono" class="redes_sociales_icono"></i>
-            <a [href]="r.url" target="_blank" rel="noopener noreferrer">
-              {{ r.nombre }}
+        </div>
+      </div>
+
+      @if (!modoEdicionGeneral) {
+        <div class="datosGenerales">
+          <div class="datosCambiar">
+            <a>Nombre: <input type="text" [(ngModel)]="datosProg.nombre"></a>
+            <br>
+            <a>Especialidad: <input type="text" [(ngModel)]="datosProg.especialidad"></a>
+            <br>
+            <a>Contacto: <input type="text" [(ngModel)]="datosProg.contacto"></a>
+            <br>
+
+            <a>Redes sociales:
+              <select [(ngModel)]="redSocial.icono" name="icono">
+                <option value="" disabled selected>Selecciona una red social</option>
+                <option value="instagram">Instagram</option>
+                <option value="github">GitHub</option>
+                <option value="linkedin">Linkedin</option>
+                <option value="facebook">Facebook</option>
+              </select>
             </a>
+
+            <input type="text" placeholder="Nombre" [(ngModel)]="redSocial.nombre">
+            <input type="text" placeholder="URL" [(ngModel)]="redSocial.url">
+            <br> 
+
+            <a>Descripcion: 
+              <textarea [(ngModel)]="datosProg.descripcion" maxlength="500"></textarea>
+            </a>
+            <br>
+
+            <button (click)="agregarRed()">Guardar</button>
           </div>
         </div>
-        <br>
-      </div>
+      }
+
+      @if (modoEdicionGeneral) {
+        <div class="datosGenerales">
+          <a class="nombre-completo">Descripcion:</a>
+          <br>
+          <a>{{ datosProg.descripcion }}</a>
+
+          <hr>
+
+          <div class="seccion-proyectos">
+            <a class="nombre-completo">Portafolios Académicos:</a>
+            
+            @if (portAcaLista && portAcaLista.length > 0) {
+              <div class="lista-proyectos-edicion">
+                @for (proyecto of portAcaLista; track proyecto.id) {
+                  <div class="tarjeta-portafolio-min">
+                    <a class="nombre-proyecto">{{ proyecto.nombre }}</a>
+                    <a (click)="eliminarProyecto(proyecto)" class="boton-eliminar"><i data-lucide="trash" class="icono-trash"></i></a>
+                  </div>
+                }
+              </div>
+            } @else {
+              <p>Aún no hay proyectos académicos guardados.</p>
+            }
+            <button (click)="portafoliosAca()">+ Gestionar / Añadir</button>
+          </div>
+
+          <hr>
+
+          <div class="seccion-proyectos">
+            <a class="nombre-completo">Portafolios Profesionales:</a>
+
+            @if (portProfLista && portProfLista.length > 0) {
+              <div class="lista-proyectos-edicion">
+                @for (proyecto of portProfLista; track proyecto.id) {
+                  <div class="tarjeta-portafolio-min">
+                    <a class="nombre-proyecto">{{ proyecto.nombre }}</a>
+                  </div>
+                }
+              </div>
+            } @else {
+              <p>Aún no hay proyectos profesionales guardados.</p>
+            }
+            <button (click)="portafoliosProf()">+ Gestionar / Añadir</button>
+          </div>
+        </div>
+      }
     </div>
-    <div *ngIf="!modoEdicionGeneral">
-      <div class="datosGenerales">
-        <div class="datosCambiar">
-          <a>Nombre: <input type="text" [(ngModel)]="datosProg.nombre"></a>
-          <br>
-          <a>Especialidad: <input type="text" [(ngModel)]="datosProg.especialidad"></a>
-          <br>
-          <a>Contacto: <input type="text" [(ngModel)]="datosProg.contacto"></a>
-          <br>
-          <a>Redes sociales:
-          <select [(ngModel)]="redSocial.icono" name="icono">
-            <option value="" disabled selected>Selecciona una red social</option>
-            <option value="instagram">Instagram</option>
-            <option value="github">GitHub</option>
-            <option value="linkedin">Linkedin</option>
-            <option value="facebook">Facebook</option>
+  }
+
+  @if (mostrarContenidoBuscar) {
+    <div class="perfil-usuario-card">
+  <h1>Perfil Personal</h1>
+  <a (click)="alternarEdicion()" class="icono-set-2"><i data-lucide="settings"></i></a>
+
+  @if (modoEdicion) {
+    <img [src]="datosUsuario?.foto" class="foto-perfil">
+
+    <a>Nombre</a>
+    <input type="text" [(ngModel)]="datosUsuario.nombre"> 
+    
+    <a>Apellido</a>
+    <input type="text" [(ngModel)]="datosUsuario.apellido">
+    
+    <a>Email</a>
+    <input type="text" [value]="datosUsuario?.email" readonly>
+    
+    <button (click)="guardarPerfil()">Guardar Cambios</button>
+  }
+
+  @if (!modoEdicion) {
+    <div class="sin-contenido">
+      <img [src]="datosUsuario?.foto" class="foto-perfil">
+      
+      <a>Nombre</a>
+      <br>
+      <a class="nombre-completo">{{ datosUsuario?.nombre }} {{ datosUsuario?.apellido }}</a>
+      <br>
+      
+      <a>Email</a>
+      <p class="email-visual">{{ datosUsuario?.email }}</p> 
+    </div>
+  }
+</div>
+  }
+
+  @if (mostrarPortAca || mostrarPortProf || crearNuevoPort) {
+  <div class="grid-cards-1">
+
+    @if (mostrarPortAca) {
+      <div>
+        <h1>Portafolios Académicos</h1>
+
+        @if (!crearNuevoPort) {
+          <button (click)="portNuevo()" class="boton-a">+ Crear Nuevo Proyecto Académico</button>
+        }
+        
+        @if (!crearNuevoPort) {
+          
+          @if(portAcaLista.length > 0){
+            
+            <div class="lista-proyectos">
+              @for (proyecto of portAcaLista; track proyecto.id) {
+                <div class="tarjeta-portafolio-1">
+
+                  <h3>{{ proyecto.nombre }}</h3>
+                  <p><strong>Descripción:</strong> {{ proyecto.descripcion }}</p>
+                  <p><strong>Tipo de participación:</strong> {{ proyecto.tipo }}</p>
+
+                  <p><strong>Tecnologías:</strong></p>
+                  <ul>
+                    @for (t of proyecto.tecnologia; track $index) {
+                      <li>{{ t }}</li>
+                    }
+                  </ul>
+
+                  <p><strong>Repositorios:</strong></p>
+                  <ul>
+                    @for (repo of proyecto.enlace; track $index) {
+                      <li><a [href]="repo" target="_blank">{{ repo }}</a></li>
+                    }
+                  </ul>
+
+                  <p><strong>Despliegues:</strong></p>
+                  <ul>
+                    @for (deploy of proyecto.enlace_despliegue; track $index) {
+                      <li><a [href]="deploy" target="_blank">{{ deploy }}</a></li>
+                    }
+                  </ul>
+
+                  <button (click)="editarProyecto(proyecto)">Editar</button>
+
+                </div>
+              }
+            </div>
+          }
+          @else {
+            <div class="info-general">
+              <p>No se encontró ningún portafolio académico. ¡Crea el primero!</p>
+            </div>
+          }
+        }
+      </div>
+    }
+
+
+    @if (mostrarPortProf) {
+      <div>
+        <h1>Portafolios Profesionales</h1>
+
+        @if (!crearNuevoPort) {
+          <button (click)="portNuevo()" class="boton-a">+ Crear Nuevo Proyecto Profesional</button>
+        }
+
+        @if (!crearNuevoPort) {
+          
+          @if(portProfLista && portProfLista.length > 0){
+            <div class="lista-proyectos">
+              @for (proyecto of portProfLista; track proyecto.id) {
+                <div class="tarjeta-portafolio-1">
+
+                  <h3>{{ proyecto.nombre }}</h3>
+                  <p><strong>Descripción:</strong> {{ proyecto.descripcion }}</p>
+                  <p><strong>Tipo de participación:</strong> {{ proyecto.tipo }}</p>
+
+                  <p><strong>Tecnologías:</strong></p>
+                  <ul>
+                    @for (t of proyecto.tecnologia; track $index) {
+                      <li>{{ t }}</li>
+                    }
+                  </ul>
+
+                  <p><strong>Repositorios:</strong></p>
+                  <ul>
+                    @for (repo of proyecto.enlace; track $index) {
+                      <li><a [href]="repo" target="_blank">{{ repo }}</a></li>
+                    }
+                  </ul>
+
+                  <p><strong>Despliegues:</strong></p>
+                  <ul>
+                    @for (deploy of proyecto.enlace_despliegue; track $index) {
+                      <li><a [href]="deploy" target="_blank">{{ deploy }}</a></li>
+                    }
+                  </ul>
+
+                  <button (click)="editarProyecto(proyecto)">Editar</button>
+
+                </div>
+              }
+            </div>
+          }
+          @else {
+            <div class="info-general">
+              <p>No se encontró ningún portafolio profesional. ¡Crea el primero!</p>
+            </div>
+          }
+        }
+      </div>
+    }
+
+
+    @if(crearNuevoPort){
+      <div class="datosCambiar">
+        <h2>{{ nuevoPortAca.id ? 'Editar Proyecto' : 'Crear Nuevo Proyecto' }}</h2>
+
+        <div class="form-group">
+          <label>Nombre:</label>
+          <input type="text" [(ngModel)]="nuevoPortAca.nombre" placeholder="Nombre">
+        </div>
+
+        <div class="form-group">
+          <label>Descripción:</label>
+          <textarea [(ngModel)]="nuevoPortAca.descripcion" placeholder="Descripción"></textarea>
+        </div>
+        
+        <div class="form-group">
+          <label>Tipo de participación:</label>
+          <select [(ngModel)]="nuevoPortAca.tipo">
+            <option disabled selected value="">Seleccione una opción</option>
+            <option value="Frontend">Frontend</option>
+            <option value="Backend">Backend</option>
+            <option value="Base de Datos">Base de Datos</option>
           </select>
-          </a>
-          <input type="text" placeholder="Nombre" [(ngModel)]="redSocial.nombre">
-          <input type="text" placeholder="URL" [(ngModel)]="redSocial.url">
-          <br> 
-          <a>Descripcion: <textarea [(ngModel)]="datosProg.descripcion" maxlength="500"></textarea></a>
-          <br>
-          <button (click)="agregarRed()">Guardar</button>
+        </div>
+
+        <div class="form-group">
+          <label>Tecnologías:</label>
+          <input type="text" [(ngModel)]="tecTemp" placeholder="Tecnologias utilizadas">
+          <button (click)="agregarTec()">Agregar</button>
+          <ul>
+            @for (t of nuevoPortAca.tecnologia; track $index) {
+              <li>{{ t }}</li>
+            }
+          </ul>
+        </div>
+
+        <div class="form-group">
+          <label>Enlaces a repositorios:</label>
+          <input type="text" [(ngModel)]="enlaceTemp" placeholder="URL del repositorio">
+          <button (click)="agregarEnlace()">Agregar</button>
+          <ul>
+            @for (t of nuevoPortAca.enlace; track $index) {
+              <li>{{ t }}</li>
+            }
+          </ul>
+        </div>
+
+        <div class="form-group">
+          <label>Enlaces a despliegues:</label>
+          <input type="text" [(ngModel)]="enlaceDespTemp" placeholder="URL del despliegue">
+          <button (click)="agregarEnlaceDesp()">Agregar</button>
+          <ul>
+            @for (t of nuevoPortAca.enlace_despliegue; track $index) {
+              <li>{{ t }}</li>
+            }
+          </ul>
+        </div>
+
+        <div style="display: flex; gap: 10px;">
+          <button (click)="guardarPortafolio()">Guardar</button>
+          <button (click)="crearNuevoPort = false">Cancelar</button>
         </div>
       </div>
-    </div>
-    <div *ngIf="modoEdicionGeneral">
-      <div class="datosGenerales">
-        <a class="nombre-completo">Descripcion:</a>
-        <br>
-        <a>{{ datosProg?.descripcion }}</a>
-      </div>
-    </div>
+    }
   </div>
-
-  <div *ngIf="mostrarContenidoBuscar">
-    <h1>Perfil Personal</h1>
-    <i data-lucide="settings" class="icono-set-2" (click)="alternarEdicion()"></i>
-    
-    <div *ngIf="modoEdicion">
-        <img [src]="datosUsuario?.foto" class="foto-perfil">
-
-        <a>Nombre</a>
-        <input type="text" [(ngModel)]="datosUsuario.nombre"> 
-        <a>Apellido</a>
-        <input type="text" [(ngModel)]="datosUsuario.apellido">
-        
-        <a>Email</a>
-        <input type="text" [value]="datosUsuario?.email" readonly>
-        <button (click)="guardarPerfil()">Guardar Cambios</button>
-    </div>
-
-    <div *ngIf="!modoEdicion" class="sin-contenido">
-        <img [src]="datosUsuario?.foto" class="foto-perfil">
-        <a>Nombre</a>
-        <br>
-        <a class="nombre-completo">{{ datosUsuario?.nombre }} {{ datosUsuario?.apellido }}</a>
-        <br>
-        <a>Email</a>
-        <p class="email-visual">{{ datosUsuario?.email }}</p> 
-    </div>
-  </div>
-
-  <div *ngIf="mostrarPortAca">
-    <h1>Portafolios Academicos</h1>
-  </div>
-
-  <div *ngIf="mostrarPortProf">
-    <h1>Portafolios Profesionales</h1>
-  </div>
+  }
 </div>

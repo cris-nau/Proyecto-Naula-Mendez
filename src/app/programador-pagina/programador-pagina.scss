@@ -366,3 +366,324 @@
   text-align: left;
 }
 
+.datosGenerales-porAca {
+  overflow-y: auto;
+}
+
+.datosCambiar{
+  overflow-y: auto;
+}
+
+.grid-cards-1 {
+  overflow-y: auto;
+}
+
+.boton-a {
+  max-width: 230px;
+  max-height: 100px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  border-radius: 0.5rem;
+  background-color: var(--color-accent);
+  color: var(--color-bg-light);
+      margin-top: 10px;
+      border: none;
+      cursor: pointer;
+      transition: all 300ms;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+
+      &:hover {
+        background-color: #3c596f;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+      }
+}
+
+.lista-proyectos {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 20px;
+  padding: 20px;
+}
+
+.tarjeta-portafolio-1 {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+  &:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.15);
+  }
+
+  h3 {
+    font-size: 22px;
+    margin-bottom: 10px;
+    color: #2c3e50;
+  }
+
+  p {
+    margin: 6px 0;
+    font-size: 16px;
+    color: #555;
+  }
+
+  strong {
+    color: #1a1a1a;
+  }
+
+  ul {
+    margin: 8px 0 15px 20px;
+    padding: 0;
+
+    li {
+      margin-bottom: 4px;
+      font-size: 15px;
+
+      a {
+        color: #007bff;
+        text-decoration: none;
+
+        &:hover {
+          text-decoration: underline;
+        }
+      }
+    }
+  }
+
+  button {
+    background: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 14px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 15px;
+    transition: background 0.2s ease;
+
+    &:hover {
+      background: #005bbf;
+    }
+
+    &:active {
+      transform: scale(0.97);
+    }
+  }
+}
+
+
+
+.datosGenerales {
+  overflow-y: auto;
+    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+    border-radius: 20px;
+    padding: 20px;
+    background-color: rgb(255, 255, 255);
+    
+
+    .nombre-completo {
+        // Estilo para los títulos de sección (Portafolios Académicos/Profesionales)
+        font-weight: 700;
+        font-size: 1.1em;
+        display: block; // Ocupa su propia línea
+        margin-bottom: 10px;
+        color: #333;
+    }
+
+    hr {
+        // Separador visual entre la descripción y las listas de proyectos
+        border: none;
+        border-top: 1px solid #eee;
+        margin: 20px 0;
+    }
+
+    .seccion-proyectos {
+        margin-bottom: 20px;
+
+        p {
+            // Estilo para el mensaje de "Aún no hay proyectos..."
+            font-style: italic;
+            color: #777;
+            margin-bottom: 10px;
+        }
+
+        > button {
+            background: #70a5dd;
+            color: white;
+            border: none;
+            padding: 10px 14px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 15px;
+            transition: background 0.2s ease;
+
+            &:hover {
+              background: #005bbf;
+            }
+
+            &:active {
+              transform: scale(0.97);
+            }
+        }
+    }
+
+    .lista-proyectos-edicion {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        margin-bottom: 15px;
+        padding-left: 0;
+    }
+
+    .tarjeta-portafolio-min {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 8px 12px;
+        background-color: #fff;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+
+        .nombre-proyecto {
+            font-size: 1em;
+            font-weight: 500;
+            color: #2c3e50;
+            flex-grow: 1;
+        }
+    }
+}
+
+.icono-trash {
+  cursor: pointer;
+  color: rgb(237, 98, 98);
+}
+
+/* =======================================
+   ESTILOS DE LA CLASE ÚNICA: .perfil-usuario-card
+   ======================================= */
+
+.perfil-usuario-card {
+  overflow-y: auto;
+    position: relative; 
+    padding: 30px;
+    background-color: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+    margin: 20px auto;
+    max-width: 600px;
+    text-align: center;
+
+    h1 {
+        color: #34495e;
+        margin-bottom: 25px;
+        font-size: 2em;
+        border-bottom: 3px solid #3498db;
+        display: inline-block;
+        padding-bottom: 5px;
+    }
+
+    .icono-set-2 {
+        position: absolute;
+        top: 25px;
+        right: 25px;
+        cursor: pointer;
+        color: #95a5a6;
+        transition: color 0.2s ease, transform 0.2s ease;
+        width: 50px;
+        height: 50px;
+
+        &:hover {
+            color: #3498db;
+            transform: rotate(15deg);
+        }
+    }
+    
+    
+    .foto-perfil {
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 4px solid #ecf0f1;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        margin-bottom: 20px;
+    }
+
+    a {
+        display: block;
+        font-weight: 700;
+        color: #555;
+        margin-top: 15px;
+        text-align: left;
+        padding-left: 10px;
+    }
+    
+    
+    .sin-contenido {
+        text-align: center;
+        padding: 1px;
+
+        .nombre-completo {
+            font-size: 1.8em;
+            color: #2c3e50;
+            margin-top: 5px;
+            margin-bottom: 15px;
+            font-weight: 600;
+            text-align: center;
+            padding-left: 0;
+        }
+
+        .email-visual {
+            font-size: 1.1em;
+            color: #7f8c8d;
+            margin-top: 5px;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+    }
+    
+    /* --- Modo de Edición --- */
+    input[type="text"] {
+        width: 100%;
+        padding: 10px;
+        margin-top: 5px;
+        margin-bottom: 10px;
+        border: 1px solid #bdc3c7;
+        border-radius: 5px;
+        font-size: 1em;
+        transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        box-sizing: border-box;
+        text-align: left;
+
+        &:focus {
+            border-color: #3498db;
+            box-shadow: 0 0 5px rgba(52, 152, 219, 0.5);
+            outline: none;
+        }
+
+        &[readonly] {
+            background-color: #ecf0f1;
+            color: #7f8c8d;
+            cursor: not-allowed;
+        }
+    }
+
+    button {
+        background-color: var(--color-accent);
+        color: white;
+        padding: 12px 25px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-weight: 600;
+        font-size: 1.05em;
+        margin-top: 20px;
+        transition: background-color 0.3s ease;
+
+        &:hover {
+            background-color: var(--color-primary);
+        }
+    }
+}

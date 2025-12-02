@@ -1,4 +1,4 @@
-import { Component, Inject, OnInit, OnDestroy, AfterViewInit } from '@angular/core';
+import { Component, Inject, OnInit, OnDestroy, AfterViewInit, inject, runInInjectionContext, Injector } from '@angular/core';
 import { Router } from '@angular/router';
 import { createIcons, icons } from 'lucide';
 import { PLATFORM_ID } from '@angular/core';
@@ -28,6 +28,9 @@ interface PortafolioItem {
 
 export class PortafolioProg implements OnInit, OnDestroy, AfterViewInit{
 
+  private injector = inject(Injector);
+  private firestore = inject(Firestore);
+
   items!: Observable<PortafolioItem[]>;
   portafoliosFirebase: PortafolioItem[] = [];
   resultados: PortafolioItem[] = [];
@@ -42,20 +45,21 @@ export class PortafolioProg implements OnInit, OnDestroy, AfterViewInit{
 
   constructor(
     private router: Router, 
-    @Inject(PLATFORM_ID) private platformId: Object, 
-    private firestore: Firestore
+    @Inject(PLATFORM_ID) private platformId: Object
   ){}
 
   ngOnInit(): void {
-    const itemsCollection = collection(this.firestore, 'programadores');
-    this.items = collectionData(itemsCollection) as Observable<PortafolioItem[]>;
-    this.obtenerUsuarioActual();
-    this.obtenerDatosUsuario();
+    runInInjectionContext(this.injector, () => {
+      const itemsCollection = collection(this.firestore, 'programadores');
+      this.items = collectionData(itemsCollection) as Observable<PortafolioItem[]>;
 
-    this.itemsSubscription = this.items.subscribe(data => {
-      this.portafoliosFirebase = data; 
-      this.resultados = data;
+      this.itemsSubscription = this.items.subscribe(data => {
+        this.portafoliosFirebase = data; 
+        this.resultados = data;
+      });
     });
+
+    this.obtenerUsuarioActual().then(() => this.obtenerDatosUsuario());
   }
 
   async obtenerUsuarioActual() {
@@ -74,11 +78,15 @@ export class PortafolioProg implements OnInit, OnDestroy, AfterViewInit{
   async obtenerDatosUsuario() {
     if (!this.usuarioActual) return;
 
-    const ref = doc(this.firestore, 'usuarios', this.usuarioActual.uid);
+    const { ref } = await runInInjectionContext(this.injector, async () => {
+        const uRef = doc(this.firestore, "usuarios", this.usuarioActual.uid);
+        return { ref: uRef};
+    });
 
-    this.datosUsuario = await firstValueFrom(
-      docData(ref, { idField: 'id' })
-    );
+    this.datosUsuario = await runInInjectionContext(this.injector, async () => {
+      const ref = doc(this.firestore, 'usuarios', this.usuarioActual.uid);
+      return firstValueFrom(docData(ref, { idField: 'id' }));
+    });
 
     this.usuarioActual;
   }

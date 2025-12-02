@@ -2,7 +2,8 @@
   import { FormsModule } from '@angular/forms';
   import { auth } from '../firebase-config';
   import { 
-    createUserWithEmailAndPassword, 
+    getRedirectResult,
+    signInWithRedirect,
     signInWithEmailAndPassword, 
     GoogleAuthProvider, 
     signInWithPopup
@@ -11,6 +12,8 @@
   import { Firestore, doc, setDoc, docData, getDoc } from '@angular/fire/firestore';
   import { firstValueFrom } from 'rxjs';
   import { FirestoreModule } from '@angular/fire/firestore';
+  import { inject, Injector } from '@angular/core';
+  import { runInInjectionContext } from '@angular/core';
 
 
   @Component({
@@ -22,7 +25,10 @@
 
   export class Inicio {
 
-    constructor(private router: Router, private firestore: Firestore){}
+    private injector = inject(Injector);
+    private firestore = inject(Firestore);
+
+    constructor(private router: Router){}
 
     email: string = '';
     password: string = '';
@@ -46,7 +52,7 @@
           const result = await signInWithPopup(auth, provider);
           const user = result.user;
 
-          await this.verificarRolEnFirestore(user.uid, user.email, user);
+          await this.verificarRolEnFirestore(user!.uid, user.email, user);
         } catch (error: any) {
           alert(`Error al iniciar sesión con Google: ${error.message}`); 
         }
@@ -56,12 +62,17 @@
     private async verificarRolEnFirestore(uid: string, email: string | null, user: any) {
       if (!email) return;
 
-      const userRef = doc(this.firestore, "usuarios", uid);
-      const userProg = doc(this.firestore, "programadores", uid);
+      const { userRef, userProg } = await runInInjectionContext(this.injector, async () => {
+        const uRef = doc(this.firestore, "usuarios", uid);
+        const pRef = doc(this.firestore, "programadores", uid);
+        return { userRef: uRef, userProg: pRef };
+      });
 
       let userSnap: any = null;
       try {
-        userSnap = await firstValueFrom(docData(userRef, { idField: 'id' }));
+        userSnap = await runInInjectionContext(this.injector, async () => 
+          await firstValueFrom(docData(userRef, { idField: 'id' }))
+        );
       } catch {
         userSnap = null;
       }
@@ -69,13 +80,15 @@
       let rolAsignado = "";
 
       if (!userSnap) {
-            rolAsignado = "";
+        rolAsignado = "";
 
-          const displayName = user.displayName || "";
-          const partes = displayName.split(" ");
-          const nombre = partes[0] || "";
-          const apellido = partes.slice(1).join(" ") || "";
+        const displayName = user.displayName || "";
+        const partes = displayName.split(" ");
+        const nombre = partes[0] || "";
+        const apellido = partes.slice(1).join(" ") || "";
 
+        
+        await runInInjectionContext(this.injector, async () => 
           await setDoc(userRef, {
             email,
             nombre,
@@ -83,17 +96,20 @@
             nombreCompleto: displayName,
             foto: user.photoURL || null,
             rol: rolAsignado
-          });
+          })
+        );
 
-          try {
-            userSnap = await firstValueFrom(docData(userRef, { idField: 'id' }));
-          } catch {
-            userSnap = null;
-          }
-        }else {
-            rolAsignado = userSnap.rol;
+        try {
+          userSnap = await runInInjectionContext(this.injector, async () =>
+            await firstValueFrom(docData(userRef, { idField: 'id' }))
+          );
+        } catch {
+          userSnap = null;
         }
-      
+      } else {
+        rolAsignado = userSnap.rol;
+      }
+
       rolAsignado = userSnap?.rol || "";
 
       switch (rolAsignado) {
@@ -102,16 +118,19 @@
           break;
 
         case "programador":
-          const portafolioSnap = await getDoc(userProg);
+          
+          const portafolioSnap = await runInInjectionContext(this.injector, async () => await getDoc(userProg));
           if (!portafolioSnap.exists()) {
-            await setDoc(userProg, {
-              nombre: user.displayName || "",
-              foto: user.photoURL || null,
-              contacto: "",
-              descripcion:"",
-              especialidad: "",
-              redes_sociales: [],
-            });
+            await runInInjectionContext(this.injector, async () =>
+              await setDoc(userProg, {
+                nombre: user.displayName || "",
+                foto: user.photoURL || null,
+                contacto: "",
+                descripcion:"",
+                especialidad: "",
+                redes_sociales: [],
+              })
+            );
           }
           this.router.navigate(['/programador']);
           break;

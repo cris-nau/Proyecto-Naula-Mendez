@@ -27,32 +27,42 @@
 </div>
 
 <div class="funciones">
-  <div *ngIf="mostrarContenidoBuscar">
-    <form #loginForm="ngForm">
+
+  @if (mostrarContenidoBuscar) {
+
+    <form>
       <div class="form-group">
         <input
           type="text"
           id="text"
           name="text"
           required
-          [(ngModel)]="text"
-          (ngModelChange)="buscar()"
+          [value]="text"
+          (input)="text = $any($event.target).value; buscar()"
           placeholder="Busca portafolios"
         />
       </div>
     </form>
-    <div *ngIf="mostrarContenido" class="grid-cards">
+
+    @if (mostrarContenido) {
+      <div class="grid-cards">
         <h3>Resultados ({{ resultados.length }})</h3>
 
-        <div *ngFor="let item of resultados" class="tarjeta-portafolio">
+        @for (item of resultados; track item; let i = $index) {
+          <div class="tarjeta-portafolio">
             <img [src]="item.foto" alt="Foto de {{ item.nombre }}">
             <h4>{{ item.nombre }}</h4>
             <p>Contacto: {{ item.contacto }}</p>
-        </div>
+          </div>
+        }
 
-        <div *ngIf="resultados.length === 0">
+        @if (resultados.length === 0) {
+          <div>
             <p>No se encontraron portafolios.</p>
-        </div>
-    </div>
-  </div>
+          </div>
+        }
+      </div>
+    }
+
+  }
 </div>

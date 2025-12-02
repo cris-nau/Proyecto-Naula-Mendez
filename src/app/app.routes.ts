@@ -10,6 +10,6 @@ export const routes: Routes = [
   { path: 'inicio', component: Inicio },
   { path: 'registrar', component: Registro },
   { path: 'portafolio', component: Portafolio },
-  { path: 'portafolioProg', component: PortafolioProg },
+  { path: 'portafolioProg', component: PortafolioProg},
   { path: 'programador', component: ProgramadorPagina}
 ];

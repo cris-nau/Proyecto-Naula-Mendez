@@ -6,9 +6,11 @@ import { createIcons, icons } from 'lucide';
 import { PLATFORM_ID } from '@angular/core';
 import { isPlatformBrowser, CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { doc, docData, Firestore, updateDoc, setDoc, arrayUnion  } from '@angular/fire/firestore';
-import { firstValueFrom, Observable } from 'rxjs';
+import { doc, docData, Firestore, updateDoc, setDoc, arrayUnion, collection, collectionData, query, where, addDoc, deleteDoc  } from '@angular/fire/firestore';
+import { firstValueFrom, Observable, Subscription } from 'rxjs';
 import { FirestoreModule } from '@angular/fire/firestore';
+import { inject, Injector } from '@angular/core';
+import { runInInjectionContext } from '@angular/core';
 
 interface DatosProgramador {
   nombre: string,
@@ -27,6 +29,16 @@ interface ProgramadorFirestore {
   especialidad?: string;
   descripcion?: string;
   redes_sociales?: any[];
+}
+
+interface PortafolioItem {
+  id?: string;
+  nombre?: string;
+  descripcion?: string;
+  tipo?: string;
+  tecnologia?: any[];
+  enlace?: any[];
+  enlace_despliegue?: any[];
 }
 
 @Component({
@@ -51,11 +63,18 @@ export class ProgramadorPagina implements OnInit {
   modoEdicionGeneral_editar: boolean = false;
   mostrarPortAca: boolean = false;
   mostrarPortProf: boolean = false;
+  crearNuevoPort: boolean = false;
+  portAcaLista: any[] = [];
+  portProfLista: any[] = [];
 
   uid: string | null = null;
 
   usuarioActual: any = null;
   datosUsuario: any = null;
+
+  tecTemp = "";
+  enlaceTemp = "";
+  enlaceDespTemp = "";
 
   datosProg: DatosProgramador = {
     nombre: "",
@@ -72,7 +91,30 @@ export class ProgramadorPagina implements OnInit {
     url: ""
   };
 
-  constructor(private router: Router, @Inject(PLATFORM_ID) private platformId: Object, private firestore: Firestore){
+  datosPorAca: PortafolioItem = {
+    nombre: "",
+    descripcion: "",
+    tipo: "",
+    tecnologia: [],
+    enlace: [],
+    enlace_despliegue: []
+  };
+
+  nuevoPortAca = {
+    id: "",
+    nombre: "",
+    descripcion: "",
+    tipo: "",
+    tecnologia: [] as string[],
+    enlace: [] as string[],
+    enlace_despliegue: [] as string[],
+    uid: ""
+  };
+
+  private injector = inject(Injector);
+  private firestore = inject(Firestore);
+
+  constructor(private router: Router, @Inject(PLATFORM_ID) private platformId: Object){
     if (isPlatformBrowser(this.platformId)) {
       onAuthStateChanged(auth, (user) => {
         if (user) {
@@ -93,6 +135,38 @@ export class ProgramadorPagina implements OnInit {
     await this.obtenerUsuarioActual();
     await this.obtenerDatosUsuario();
     await this.obtenerDatosProg();
+    await this.obtenerDatosPorAca();
+    await this.cargarProyectosAca();
+  }
+
+  async cargarProyectosAca() {
+    if (!this.usuarioActual) return;
+
+    await runInInjectionContext(this.injector, async () => {
+      
+      const colRef = collection(this.firestore, `programadores/${this.usuarioActual.uid}/proyectos_aca`);
+
+      const consulta = query(colRef); 
+
+      this.portAcaLista = await firstValueFrom(
+        collectionData(consulta, { idField: "id" })
+      );
+      
+      console.log("Proyectos cargados:", this.portAcaLista);
+    });
+  }
+
+  async cargarProyectosProf() {
+    if (!this.usuarioActual) return;
+
+    await runInInjectionContext(this.injector, async () => {
+      // Apuntamos a la subcolección de profesionales
+      const colRef = collection(this.firestore, `programadores/${this.usuarioActual.uid}/proyectos_prof`);
+
+      this.portProfLista = await firstValueFrom(
+        collectionData(query(colRef), { idField: "id" })
+      );
+    });
   }
 
   async obtenerUsuarioActual() {
@@ -111,22 +185,27 @@ export class ProgramadorPagina implements OnInit {
   async obtenerDatosUsuario() {
     if (!this.usuarioActual) return;
 
-    const ref = doc(this.firestore, 'usuarios', this.usuarioActual.uid);
 
-    this.datosUsuario = await firstValueFrom(
-      docData(ref, { idField: 'id' })
+    const { ref } = await runInInjectionContext(this.injector, async () => {
+        const uRef = doc(this.firestore, "usuarios", this.usuarioActual.uid);
+        return { ref: uRef};
+    });
+
+    this.datosUsuario = await runInInjectionContext(this.injector, async () =>
+      firstValueFrom(docData(ref, { idField: 'id' }))
     );
-
-    this.datosUsuario;
   }
 
   async obtenerDatosProg() {
     if (!this.usuarioActual) return;
 
-    const ref = doc(this.firestore, 'programadores', this.usuarioActual.uid);
+    const { ref } = await runInInjectionContext(this.injector, async () => {
+        const uRef = doc(this.firestore, "programadores", this.usuarioActual.uid);
+        return { ref: uRef};
+    });
 
-    const data = await firstValueFrom(
-      docData(ref, { idField: 'id' }) as Observable<ProgramadorFirestore>
+    const data = await runInInjectionContext(this.injector, async () =>
+      firstValueFrom(docData(ref, { idField: 'id' })) as Promise<ProgramadorFirestore>
     );
 
     this.datosProg = {
@@ -136,6 +215,28 @@ export class ProgramadorPagina implements OnInit {
       especialidad: data?.especialidad || "",
       descripcion: data?.descripcion || "",
       redes_sociales: data?.redes_sociales || []
+    };
+  }
+
+  async obtenerDatosPorAca() {
+    if (!this.usuarioActual) return;
+
+    const { ref } = await runInInjectionContext(this.injector, async () => {
+        const uRef = doc(this.firestore, "pro_port_aca", this.usuarioActual.uid);
+        return { ref: uRef};
+    });
+
+    const data = await runInInjectionContext(this.injector, async () =>
+      firstValueFrom(docData(ref, { idField: 'id' })) as Promise<PortafolioItem>
+    );
+
+    this.datosPorAca = {
+      nombre: data?.nombre || "",
+      descripcion: data?.descripcion || "",
+      tipo: data?.tipo || "",
+      tecnologia: data?.tecnologia || [],
+      enlace: data?.enlace || [],
+      enlace_despliegue: data?.enlace_despliegue || []
     };
   }
   
@@ -229,6 +330,7 @@ export class ProgramadorPagina implements OnInit {
     this.portafolioProgramador = false;
     this.mostrarPortProf = false;
     this.mostrarPortAca = true;
+    this.cargarProyectosAca();
   }
 
   portafoliosProf() {
@@ -241,6 +343,7 @@ export class ProgramadorPagina implements OnInit {
     this.portafolioProgramador = false;
     this.mostrarPortAca = false;
     this.mostrarPortProf = true;
+    this.cargarProyectosProf();
   }
 
   alternarEdicion() {
@@ -283,6 +386,188 @@ export class ProgramadorPagina implements OnInit {
 
   perfil(){
     this.portafolioProgramador = false;
+    this.mostrarPortProf = false;
+    this.mostrarPortAca = false;
     this.mostrarContenidoBuscar = !this.mostrarContenidoBuscar;
+    if (this.mostrarContenidoBuscar) {
+      setTimeout(() => { 
+        if (isPlatformBrowser(this.platformId)) {
+          createIcons({ icons });
+        }
+      }, 0); 
+    }
+  }
+
+  // Renombramos: guardarPortAca -> guardarPortafolio
+  async guardarPortafolio() {
+    if (!this.usuarioActual) return;
+
+    // 1. DETERMINAR LA COLECCIÓN DE DESTINO
+    let nombreColeccion: string;
+    if (this.mostrarPortAca) {
+      nombreColeccion = 'proyectos_aca';
+    } else if (this.mostrarPortProf) {
+      nombreColeccion = 'proyectos_prof';
+    } else {
+      console.error("Error: No se ha seleccionado Portafolio Académico ni Profesional.");
+      alert("Error de contexto: Selecciona un tipo de portafolio.");
+      return;
+    }
+
+    try {
+      // 2. CONSTRUIR LA RUTA BASE (programadores/{uid}/[nombreColeccion])
+      const rutaColeccionBase = `programadores/${this.usuarioActual.uid}/${nombreColeccion}`;
+
+      // 3. DATOS A GUARDAR (Comunes para ambos tipos)
+      const datosProyecto = {
+        uid: this.usuarioActual.uid,
+        nombre: this.nuevoPortAca.nombre,
+        descripcion: this.nuevoPortAca.descripcion,
+        tipo: this.nuevoPortAca.tipo,
+        tecnologia: this.nuevoPortAca.tecnologia,
+        enlace: this.nuevoPortAca.enlace,
+        enlace_despliegue: this.nuevoPortAca.enlace_despliegue,
+      };
+
+      // 4. LÓGICA CONDICIONAL: EDITAR (updateDoc) vs. CREAR (addDoc)
+      if (this.nuevoPortAca.id) {
+        // === EDITAR ===
+        const docRef = doc(this.firestore, `${rutaColeccionBase}/${this.nuevoPortAca.id}`);
+        await updateDoc(docRef, datosProyecto);
+        alert(`Proyecto (${nombreColeccion}) actualizado correctamente`);
+
+      } else {
+        // === CREAR NUEVO ===
+        const colRef = collection(this.firestore, rutaColeccionBase);
+        await addDoc(colRef, { ...datosProyecto, fechaCreacion: new Date() });
+        alert(`Proyecto (${nombreColeccion}) creado exitosamente`);
+      }
+
+      // 5. LIMPIEZA Y RECARGA
+      this.limpiarFormulario(); // Asume que esta función existe y limpia this.nuevoPortAca, this.tecTemp, etc.
+      
+      // Llamamos a la función de carga adecuada
+      if (this.mostrarPortAca) {
+        await this.cargarProyectosAca(); 
+      } else if (this.mostrarPortProf) {
+        await this.cargarProyectosProf(); // NECESITAS IMPLEMENTAR ESTA FUNCIÓN
+      }
+
+    } catch (error) {
+      console.error(`Error al guardar/editar en ${nombreColeccion}:`, error);
+      alert("Hubo un error al procesar la solicitud.");
+    }
+  }
+
+  limpiarFormulario() {
+    this.nuevoPortAca = {
+      id: "",
+      uid: "",
+      nombre: "",
+      descripcion: "",
+      tipo: "",
+      tecnologia: [],
+      enlace: [],
+      enlace_despliegue: [],
+    };
+    this.tecTemp = "";
+    this.enlaceTemp = "";
+    this.enlaceDespTemp = "";
+    this.crearNuevoPort = false;
+  }
+
+
+  agregarTec() {
+    if (!this.nuevoPortAca.tecnologia) this.nuevoPortAca.tecnologia = [];
+    if (this.tecTemp.trim() !== "") {
+      this.nuevoPortAca.tecnologia.push(this.tecTemp.trim());
+      this.tecTemp = "";
+    }
+  }
+
+  agregarEnlace() {
+    if (!this.nuevoPortAca.enlace) this.nuevoPortAca.enlace = [];
+    if (this.enlaceTemp.trim() !== "") {
+      this.nuevoPortAca.enlace.push(this.enlaceTemp.trim());
+      this.enlaceTemp = "";
+    }
+  }
+
+  agregarEnlaceDesp() {
+    if (!this.nuevoPortAca.enlace_despliegue) this.nuevoPortAca.enlace_despliegue = [];
+    if (this.enlaceDespTemp.trim() !== "") {
+      this.nuevoPortAca.enlace_despliegue.push(this.enlaceDespTemp.trim());
+      this.enlaceDespTemp = "";
+    }
+  }
+
+  portNuevo() {
+    this.limpiarFormulario();
+    this.crearNuevoPort = true;
+  }
+
+  editarProyecto(port: any){
+    this.nuevoPortAca = {
+      id: port.id,
+      uid: port.uid,
+      nombre: port.nombre,
+      descripcion: port.descripcion,
+      tipo: port.tipo,
+      tecnologia: port.tecnologia ? [...port.tecnologia] : [],
+      enlace: port.enlace ? [...port.enlace] : [],
+      enlace_despliegue: port.enlace_despliegue ? [...port.enlace_despliegue] : []
+    };
+
+    this.crearNuevoPort = true;
+  }
+
+  async eliminarProyecto(proyecto: any) {
+    if (!this.usuarioActual || !proyecto.id) return;
+
+    // Confirmación al usuario antes de eliminar
+    const confirmar = confirm(`¿Estás seguro de que quieres eliminar el proyecto "${proyecto.nombre}"? Esta acción es irreversible.`);
+    
+    if (!confirmar) {
+      return; // Cancelar la eliminación
+    }
+    
+    // 1. Deducir la colección objetivo
+    let nombreColeccion: string;
+    // Asumimos que la lista actual que se está mostrando define el contexto
+    // También puedes basarte en variables de estado (this.mostrarPortAca)
+    if (this.mostrarPortAca) { 
+      nombreColeccion = 'proyectos_aca';
+    } else if (this.mostrarPortProf) {
+      nombreColeccion = 'proyectos_prof';
+    } else {
+      console.error("No se pudo determinar el tipo de portafolio para la eliminación.");
+      return;
+    }
+
+    try {
+      // 2. Construir la ruta completa del documento
+      const rutaDoc = `programadores/${this.usuarioActual.uid}/${nombreColeccion}/${proyecto.id}`;
+      const docRef = doc(this.firestore, rutaDoc);
+
+      // 3. Ejecutar la eliminación
+      await deleteDoc(docRef);
+
+      alert("Proyecto eliminado correctamente.");
+
+      // 4. Recargar la lista de proyectos activa
+      if (this.mostrarPortAca) {
+        await this.cargarProyectosAca(); 
+      } else if (this.mostrarPortProf) {
+        await this.cargarProyectosProf();
+      }
+
+    } catch (error) {
+      console.error("Error al eliminar el proyecto:", error);
+      alert("Hubo un error al intentar eliminar el proyecto.");
+    }
+  }
+
+  mensajes() {
+    
   }
 }
