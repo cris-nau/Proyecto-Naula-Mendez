@@ -4,18 +4,48 @@ import { createIcons, icons } from 'lucide';
 import { PLATFORM_ID } from '@angular/core';
 import { isPlatformBrowser, CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Firestore, collection, collectionData } from '@angular/fire/firestore';
+import { Firestore, addDoc, collection, collectionData } from '@angular/fire/firestore';
 import { doc, docData } from '@angular/fire/firestore';
 import { Observable, Subscription } from 'rxjs';
 import { auth } from '../firebase-config';
-import { signOut } from 'firebase/auth';
+import { onAuthStateChanged, signOut } from 'firebase/auth';
 import { FirestoreModule } from '@angular/fire/firestore';
 import { firstValueFrom } from 'rxjs';
 
-interface PortafolioItem {
+interface PortafolioDetalle {
+  id?: string; 
   nombre: string;
   foto: string;
   contacto: string;
+  descripcion?: string;
+  especialidad?: string;
+  redes_sociales?: { icono: string; url: string; nombre: string; }[];
+  proyectosAca?: any[]; 
+  proyectosProf?: any[]; 
+}
+
+interface PortafolioItem {
+  id: string; 
+  nombre: string;
+  foto: string;
+  contacto: string;
+  descripcion: string;
+}
+
+interface Horario {
+  dia: string;
+  horaInicio: string;
+  horaFin: string;
+}
+
+interface ProgramadorCompleto { 
+  id: string; 
+  nombre: string;
+  foto: string;
+  contacto: string;
+  descripcion: string;
+  horarios?: Horario[]; 
+  especialidad?: string;
 }
 
 @Component({
@@ -37,29 +67,79 @@ export class PortafolioProg implements OnInit, OnDestroy, AfterViewInit{
   private itemsSubscription!: Subscription;
 
   mostrarContenidoBuscar: boolean = false;
+  mostrarContenidoG: boolean = false;
   mostrarContenido: boolean = false;
   text: string = '';
 
   usuarioActual: any = null;
   datosUsuario: any = null;
 
+  mostrarDetalle: boolean = false;
+  portafolioSeleccionado: PortafolioDetalle | null = null;  
+
+  buscarP: boolean = false;
+
+  proyectoSeleccionadoDetalle: any = null;
+  mostrarDetalleProyecto: boolean = false;
+
+  mensaje: boolean = false;
+  pro_dis: boolean = false;
+
+  portafoliosFirebase1: ProgramadorCompleto[] = [];
+  resultados1: ProgramadorCompleto[] = [];
+
+  mostrarFormularioSolicitud: boolean = false;
+
+  solicitudData: any = {
+    programadorId: '',
+    horarioSeleccionado: '',
+    mensaje: ''
+  };
+
   constructor(
     private router: Router, 
     @Inject(PLATFORM_ID) private platformId: Object
-  ){}
+  ){
+    if (isPlatformBrowser(this.platformId)) {
+          onAuthStateChanged(auth, (user) => {
+            if (!user) {
+              this.router.navigate(['/']);
+            }
+          });
+    }
+  }
 
   ngOnInit(): void {
     runInInjectionContext(this.injector, () => {
       const itemsCollection = collection(this.firestore, 'programadores');
-      this.items = collectionData(itemsCollection) as Observable<PortafolioItem[]>;
+      this.items = collectionData(itemsCollection, { idField: 'id' }) as Observable<PortafolioItem[]>;
 
       this.itemsSubscription = this.items.subscribe(data => {
         this.portafoliosFirebase = data; 
         this.resultados = data;
+        this.portafoliosFirebase1 = data; 
+        this.resultados1 = data;
       });
     });
 
     this.obtenerUsuarioActual().then(() => this.obtenerDatosUsuario());
+  }
+
+  get programadoresDisponibles(): ProgramadorCompleto[] {
+    return this.portafoliosFirebase1;
+  }
+
+  get nombreProgramadorSeleccionado(): string {
+    const programador = this.portafoliosFirebase.find(p => p.id === this.solicitudData.programadorId);
+    return programador ? `${programador.nombre}` : 'el Programador';
+  }
+
+  refrescarIconos() {
+    if (isPlatformBrowser(this.platformId)) {
+      setTimeout(() => {
+        createIcons({ icons });
+      }, 100);
+    }
   }
 
   async obtenerUsuarioActual() {
@@ -114,8 +194,20 @@ export class PortafolioProg implements OnInit, OnDestroy, AfterViewInit{
   }
 
   funcionBuscar() {
+    this.mostrarContenidoG = false;
     this.mostrarContenidoBuscar = true;
     this.mostrarContenido = true;
+    this.buscarP = true;
+    this.refrescarIconos();
+  }
+
+  funcionProtG() {
+    this.mostrarDetalle = false;
+    this.buscarP = false;
+    this.mostrarContenido = false;
+    this.mostrarContenidoBuscar = false;
+    this.mostrarContenidoG = !this.mostrarContenidoG;
+    this.refrescarIconos();
   }
 
   buscar() {
@@ -124,12 +216,160 @@ export class PortafolioProg implements OnInit, OnDestroy, AfterViewInit{
       item.nombre.toLowerCase().includes(texto) ||
       item.contacto.toLowerCase().includes(texto)
     );
+    this.refrescarIconos();
+  }
+
+  async verDetalle(item: PortafolioItem) {
+    this.mostrarContenidoG = false;
+    if (!item.id) {
+        console.error("ID del portafolio no encontrado.");
+        return;
+    }
+
+    const progDocRef = doc(this.firestore, 'programadores', item.id);
+    const datosPrincipales = await firstValueFrom(docData(progDocRef, { idField: 'id' })) as PortafolioDetalle;
+
+    const acaCollection = collection(this.firestore, 'programadores', item.id, 'proyectos_aca');
+    const proyectosAcaSnapshot = await firstValueFrom(
+      collectionData(acaCollection, { idField: 'id' })
+    );
+
+    const profCollection = collection(this.firestore, 'programadores', item.id, 'proyectos_prof');
+    const proyectosProfSnapshot = await firstValueFrom(
+      collectionData(profCollection, { idField: 'id' })
+    );
+
+
+    this.portafolioSeleccionado = {
+        ...datosPrincipales,
+        proyectosAca: proyectosAcaSnapshot,
+        proyectosProf: proyectosProfSnapshot,
+        
+        foto: datosPrincipales.foto || item.foto, 
+        contacto: datosPrincipales.contacto || item.contacto,
+    };
+    this.mostrarDetalle = true;
+    this.mostrarContenidoBuscar = false;
+
+    this.refrescarIconos();
   }
 
 
-  ngAfterViewInit(): void {
-    if (isPlatformBrowser(this.platformId)) {
-      createIcons({ icons });
+  cerrarDetalle() {
+    this.mostrarDetalle = false;
+    this.portafolioSeleccionado = null;
+    this.mostrarContenidoBuscar = true;
+    this.refrescarIconos();
+  }
+
+  async verProyectoDetalle(proyecto: any, tipo: 'aca' | 'prof') {
+    this.mostrarContenidoG = false;
+    this.mostrarDetalle = false;           
+    this.mostrarDetalleProyecto = true; 
+    setTimeout(() => {
+      if (isPlatformBrowser(this.platformId)) createIcons({ icons });
+    }, 0);
+
+    if (!this.portafolioSeleccionado?.id) {
+      console.error("ID del programador no encontrado.");
+      return;
     }
+
+    try {
+      const proyectoRef = doc(
+        this.firestore,
+        'programadores',
+        this.portafolioSeleccionado.id,
+        tipo === 'aca' ? 'proyectos_aca' : 'proyectos_prof',
+        proyecto.id 
+      );
+
+      const datosProyecto = await firstValueFrom(
+        docData(proyectoRef, { idField: 'id' })
+      );
+
+      this.proyectoSeleccionadoDetalle = datosProyecto;
+
+    } catch (error) {
+      console.error("Error cargando detalle del proyecto:", error);
+    }
+    this.refrescarIconos();
+  }
+
+  cerrarProyectoDetalle() {
+    this.mostrarDetalleProyecto = false;
+    this.mostrarDetalle = true;
+    this.mostrarContenidoBuscar = true; 
+    this.refrescarIconos();
+  }
+
+  tutoria() {
+    this.mostrarDetalleProyecto = false;
+    this.mensaje = false;
+    this.mostrarContenidoG = false;
+    this.mostrarDetalle = false;
+    this.mostrarContenidoBuscar = false;
+    this.buscarP = false;
+    this.pro_dis = true;
+    this.refrescarIconos();
+  }
+
+  mensajeFun() {
+    this.mensaje = !this.mensaje;
+    this.refrescarIconos();
+  }
+
+  iniciarSolicitud(programador: any) {
+    if (!this.usuarioActual) {
+      alert("Debes iniciar sesión para enviar una solicitud.");
+      this.router.navigate(['/login']);
+      return;
+    }
+    
+    this.solicitudData.programadorId = programador.id;
+    this.mostrarFormularioSolicitud = true;
+    this.refrescarIconos();
+  }
+
+  async enviarSolicitud() {
+    if (!this.solicitudData.programadorId || !this.solicitudData.horarioSeleccionado) {
+      alert("Por favor, selecciona un horario y escribe un mensaje.");
+      return;
+    }
+
+    try {
+      const colRef = collection(this.firestore, 'solicitudes'); // Nueva colección
+
+      const solicitud = {
+        programadorId: this.solicitudData.programadorId,
+        programadorNombre: this.portafoliosFirebase.find(p => p.id === this.solicitudData.programadorId)?.nombre,
+        
+        // Datos del usuario que solicita
+        usuarioId: this.usuarioActual.uid,
+        usuarioEmail: this.usuarioActual.email,
+        
+        // Datos de la solicitud
+        horario: this.solicitudData.horarioSeleccionado,
+        mensaje: this.solicitudData.mensaje,
+        estado: 'Pendiente', // 'Pendiente', 'Aceptada', 'Rechazada'
+        fechaSolicitud: new Date()
+      };
+      
+      await addDoc(colRef, solicitud);
+      
+      alert(`Solicitud enviada al programador ${solicitud.programadorNombre} con éxito. ¡Pronto te responderán!`);
+      
+      // Limpiar y cerrar
+      this.solicitudData = { programadorId: '', horarioSeleccionado: '', mensaje: '' };
+      this.mostrarFormularioSolicitud = false;
+
+    } catch (error) {
+      console.error("Error al enviar la solicitud:", error);
+      alert("Ocurrió un error al enviar la solicitud.");
+    }
+  }
+
+  ngAfterViewInit(): void {
+    this.refrescarIconos();
   }
 }

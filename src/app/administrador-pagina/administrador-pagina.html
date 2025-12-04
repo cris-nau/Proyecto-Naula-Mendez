@@ -1,0 +1,213 @@
+<header class="cabecera">
+  <div class="cabecera-inner contenedor">
+    <div class="logo">
+      <a (click)="inicioAdmin()">
+        <span>M</span><span class="destacado">a</span>ntra <span style="font-size: 0.8em; color: #666;"></span>
+      </a>
+    </div>
+    <nav>
+      <button class="boton" (click)="cerrarSesion()">Cerrar sesión</button>
+    </nav>
+  </div>
+</header>
+
+<div class="sidebar"> 
+  <div class="sidebar-header"><h3>Admin Panel</h3></div>
+  <br>
+  <ul class="sidebar-menu">
+    <a (click)="verGestionProgramadores()" title="Gestionar Programadores">
+      <li><i data-lucide="users" class="icono"></i></li>
+    </a>
+
+    <a (click)="crearProgramador()" title="Nuevo Programador">
+      <li><i data-lucide="user-plus" class="icono"></i></li>
+    </a>
+    
+    <a><li><i data-lucide="minus" class="icono-barra"></i></li></a>
+
+    <a (click)="perfilAdmin()"><li id="perfil"><i data-lucide="shield" class="icono-set"></i></li></a>
+  </ul>
+</div>
+
+<div class="funciones">
+
+  @if (mostrarListaProgramadores) {
+    <div>
+      <h1>Gestión de Programadores</h1>
+      
+      <div class="acciones-superiores">
+        <button (click)="crearProgramador()" class="boton-a">+ Registrar Nuevo Programador</button>
+      </div>
+
+      @if (listaProgramadores && listaProgramadores.length > 0) {
+        <div class="grid-cards-1">
+          <div class="lista-proyectos"> @for (prog of listaProgramadores; track prog.id) {
+              <div class="tarjeta-portafolio-1"> <div style="display: flex; justify-content: space-between; align-items: start;">
+                  <div>
+                    <img [src]="prog.foto || 'assets/default-user.png'" class="foto-perfil-mini" style="width: 50px; height: 50px; border-radius: 50%;">
+                    <h3>{{ prog.nombre }} {{ prog.apellido }}</h3>
+                  </div>
+                  <span class="badge" [class.activo]="prog.activo">{{ prog.activo ? 'Activo' : 'Inactivo' }}</span>
+                </div>
+
+                <p><strong>Especialidad:</strong> {{ prog.especialidad }}</p>
+                <p><strong>Email:</strong> {{ prog.email }}</p>
+                
+                <hr>
+                
+                <p><strong>Horarios Registrados:</strong> {{ prog.horarios.length }} turnos</p>
+
+                <div class="botones-tarjeta" style="margin-top: 15px; display: flex; gap: 10px;">
+                  <button (click)="editarProgramador(prog)">Editar / Horarios</button>
+                  <button (click)="eliminarProgramador(prog)" class="botonElimP">Eliminar</button>
+                </div>
+              </div>
+            }
+
+          </div>
+        </div>
+      } @else {
+        <div class="info-general">
+          <p>No hay programadores registrados en el sistema.</p>
+        </div>
+      }
+    </div>
+  }
+
+  @if (modoEdicionProgramador) {
+    <div class="grid-cards-1">
+      <div class="datosCambiar">
+        
+        <div style="display: flex; justify-content: space-between;">
+            <h2>{{ programadorSeleccionado.id ? 'Gestionar Programador' : 'Registrar Programador' }}</h2>
+            <button (click)="cancelarEdicion()" class="boton-cerrar"><i data-lucide="x" class="icono-x"></i></button>
+        </div>
+
+        <h3>1. Datos Personales</h3>
+        <div class="form-group">
+          <label>Nombre:</label>
+          <input type="text" [(ngModel)]="programadorSeleccionado.nombre" placeholder="Nombre">
+        </div>
+
+        <div class="form-group">
+          <label>Apellido:</label>
+          <input type="text" [(ngModel)]="programadorSeleccionado.apellido" placeholder="Apellido">
+        </div>
+
+        <div class="form-group">
+          <label>Email:</label>
+          <input type="email" [(ngModel)]="programadorSeleccionado.email" placeholder="correo@ejemplo.com">
+        </div>
+        
+        @if (!programadorSeleccionado.id) {
+            <div class="form-group">
+            <label>Contraseña Temporal:</label>
+            <input type="password" [(ngModel)]="programadorSeleccionado.password" placeholder="********">
+            </div>
+        }
+
+        <div class="form-group">
+          <label>Especialidad:</label>
+          <input type="text" [(ngModel)]="programadorSeleccionado.especialidad" placeholder="Ej: Fullstack, Backend...">
+        </div>
+
+        <hr>
+
+        <h3>2. Horarios de Disponibilidad</h3>
+        <p class="nota-admin">Define los bloques de tiempo en los que este programador puede trabajar.</p>
+
+        <div class="caja-agregar-horario">
+            <div class="caja-horario-contenedor">
+                
+                <div class="campo-horario">
+                    <label>Día:</label>
+                    <select [(ngModel)]="nuevoHorario.dia">
+                        <option value="Lunes">Lunes</option>
+                        <option value="Martes">Martes</option>
+                        <option value="Miércoles">Miércoles</option>
+                        <option value="Jueves">Jueves</option>
+                        <option value="Viernes">Viernes</option>
+                        <option value="Sábado">Sábado</option>
+                    </select>
+                </div>
+
+                <div class="campo-horario">
+                    <label>Inicio:</label>
+                    <input type="time" [(ngModel)]="nuevoHorario.horaInicio">
+                </div>
+
+                <div class="campo-horario">
+                    <label>Fin:</label>
+                    <input type="time" [(ngModel)]="nuevoHorario.horaFin">
+                </div>
+
+                <div class="campo-boton">
+                    <button class="btn-agregar-horario" (click)="agregarHorario()">+ Agregar Turno</button>
+                </div>
+
+            </div>
+        </div>
+
+
+        <div class="lista-horarios">
+            @if (programadorSeleccionado.horarios && programadorSeleccionado.horarios.length > 0) {
+                <table style="width: 100%; border-collapse: collapse;">
+                    <thead>
+                        <tr style="text-align: left; background: #e0e0e0;">
+                            <th style="padding: 8px;">Día</th>
+                            <th>Desde</th>
+                            <th>Hasta</th>
+                            <th>Acción</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @for (h of programadorSeleccionado.horarios; track $index) {
+                            <tr style="border-bottom: 1px solid #ccc;">
+                                <td style="padding: 8px;">{{ h.dia }}</td>
+                                <td>{{ h.horaInicio }}</td>
+                                <td>{{ h.horaFin }}</td>
+                                <td><a (click)="eliminarHorario($index)" class="eliminar"><i data-lucide="trash-2"></i></a></td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            } @else {
+                <p>No hay horarios asignados aún.</p>
+            }
+        </div>
+
+        <br><br>
+        
+        <div style="display: flex; gap: 10px;">
+          <button (click)="guardarCambiosProgramador()" class="boton-guardar">Guardar Todo</button>
+          <button (click)="cancelarEdicion()" class="boton-cancelar">Cancelar</button>
+        </div>
+
+      </div>
+    </div>
+  }
+
+  @if (mostrarPerfilAdmin) {
+    <div class="perfil-usuario-card">
+      <h1>Perfil de Administrador</h1>
+      
+      <div class="sin-contenido">
+        <div class="datosPersonales">
+            <i data-lucide="shield-check" style="width: 80px; height: 80px; color: #333;"></i>
+            <br>
+
+            <a>Nombre</a>
+            <a class="nombre-completo">{{ datosAdmin.nombre }}</a>
+
+            <a>Rol</a>
+            <p>Super Administrador</p>
+            <br>
+
+            <a>Email</a>
+            <p class="email-visual">{{ datosAdmin.email }}</p> 
+        </div>
+      </div>
+    </div>
+  }
+
+</div>

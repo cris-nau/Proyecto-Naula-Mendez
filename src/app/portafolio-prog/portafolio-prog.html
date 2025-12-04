@@ -19,18 +19,18 @@
     <br>
     <ul class="sidebar-menu">
         <a (click)="funcionBuscar()"><li><i data-lucide="search" class="icono"></i></li></a>
-        <a><li><i data-lucide="file-text" class="icono"></i></li></a>
+        <a (click)="funcionProtG()"><li><i data-lucide="file-text" class="icono"></i></li></a>
         <a><li><i data-lucide="minus" class="icono-barra"></i></li></a>
-        <a><li><i data-lucide="message-circle" class="icono"></i></li></a>
+        <a (click)="mensajeFun()"><li><i data-lucide="message-circle" class="icono"></i></li></a>
         <a><li><i data-lucide="info" class="icono-set"></i></li></a>
     </ul>
 </div>
 
 <div class="funciones">
 
-  @if (mostrarContenidoBuscar) {
-
-    <form>
+  @if (mostrarContenidoBuscar && !mostrarDetalle) {
+    @if (buscarP){
+      <form>
       <div class="form-group">
         <input
           type="text"
@@ -43,6 +43,7 @@
         />
       </div>
     </form>
+    }
 
     @if (mostrarContenido) {
       <div class="grid-cards">
@@ -50,9 +51,15 @@
 
         @for (item of resultados; track item; let i = $index) {
           <div class="tarjeta-portafolio">
-            <img [src]="item.foto" alt="Foto de {{ item.nombre }}">
-            <h4>{{ item.nombre }}</h4>
-            <p>Contacto: {{ item.contacto }}</p>
+            <img [src]="item.foto" alt="Foto de {{ item.nombre }}" class="img-pro">
+            <div class="port-t">
+              <h4>{{ item.nombre }}</h4>
+              <p>Contacto: {{ item.contacto }}</p>
+              <label>{{item.descripcion }}</label>
+            </div>
+            <div class="botonVer">
+              <button (click)="verDetalle(item)" class="boton-v">Ver</button>
+            </div>
           </div>
         }
 
@@ -63,6 +70,249 @@
         }
       </div>
     }
-
   }
+  @if (mostrarDetalle && portafolioSeleccionado) {
+    <div>
+    <div class="sin-contenido">
+        <div class="datosPersonales">
+            
+            <img [src]="portafolioSeleccionado.foto" class="foto-perfil-p">
+            
+            <br><br>
+            
+            <a class="nombre-completo">{{ portafolioSeleccionado.nombre }}</a>
+            <br>
+
+            <div class="info-general">
+                <br>
+                <a class="nombre-completo">Especialidad: {{ portafolioSeleccionado.especialidad }}</a>
+                <br><br>
+                <a class="nombre-completo">Contacto: {{ portafolioSeleccionado.contacto }}</a>
+                <br><br>
+                Redes:
+                <br>
+
+                @for (r of portafolioSeleccionado.redes_sociales; track r.icono) {
+                    <div>
+                        <i [attr.data-lucide]="r.icono" class="redes_sociales_icono"></i>
+                        <a [href]="r.url" target="_blank" rel="noopener noreferrer">
+                            {{ r.nombre }}
+                        </a>
+                    </div>
+                }
+            </div>
+
+            <br>
+        </div>
+    </div>
+    
+    <div class="datosGenerales-container"> <div class="datosGenerales">
+            
+            <a class="nombre-completo">Descripcion:</a>
+            <br>
+            <a>{{ portafolioSeleccionado.descripcion }}</a>
+
+            <hr>
+
+            <div class="seccion-proyectos">
+                <a class="nombre-completo">Portafolios Académicos:</a>
+                
+                @if (portafolioSeleccionado.proyectosAca && portafolioSeleccionado.proyectosAca.length > 0) {
+                    <div class="lista-proyectos-edicion">
+                        @for (proyecto of portafolioSeleccionado.proyectosAca; track proyecto.id) {
+                            <div class="tarjeta-portafolio-min">
+                              <a class="nombre-proyecto">{{ proyecto.nombre }} - Descripcion: {{proyecto.descripcion}}</a>
+                              <a (click)="verProyectoDetalle(proyecto, 'aca')"><i data-lucide="folder-search" class="folder"></i></a>
+                            </div>
+                        }
+                    </div>
+                } @else {
+                    <p>No hay proyectos académicos para mostrar.</p>
+                }
+                </div>
+
+            <hr>
+
+            <div class="seccion-proyectos">
+                <a class="nombre-completo">Portafolios Profesionales:</a>
+
+                @if (portafolioSeleccionado.proyectosProf && portafolioSeleccionado.proyectosProf.length > 0) {
+                    <div class="lista-proyectos-edicion">
+                        @for (proyecto of portafolioSeleccionado.proyectosProf; track proyecto.id) {
+                            <div class="tarjeta-portafolio-min">
+                                <a class="nombre-proyecto">{{ proyecto.nombre }}</a>
+                                <a (click)="verProyectoDetalle(proyecto, 'prof')"><i data-lucide="folder-search" class="folder"></i></a>
+                            </div>
+                        }
+                    </div>
+                } @else {
+                    <p>No hay proyectos profesionales para mostrar.</p>
+                }
+              </div>
+          @for (programador of programadoresDisponibles; track programador.id) {
+            @if (programador.horarios && programador.horarios.length > 0) {
+              <p>Horarios disponibles:</p>
+              <ul class="horarios-list">
+                @for (horario of programador.horarios; track $index) {
+                  <li>
+                    {{ horario.dia }}: {{ horario.horaInicio }} - {{ horario.horaFin }}
+                  </li>
+                }
+              </ul>
+            } @else {
+              <p class="sin-horario">Horarios no publicados.</p>
+            }
+          }
+          <button class="portafolio-cerrar-btn" (click)="cerrarDetalle()">Cerrar</button>
+          <button class="buscar-pro" (click)="tutoria()">Consultar tutoria</button>
+        </div>
+    </div>
+    </div>
+  }
+  @if (mostrarContenidoG) {
+      <div class="grid-cards-g">
+        <h3>Resultados ({{ resultados.length }})</h3>
+
+        @for (item of resultados; track item; let i = $index) {
+          <div class="tarjeta-portafolio">
+            <img [src]="item.foto" alt="Foto de {{ item.nombre }}" class="img-pro">
+            <div class="port-t">
+              <h4>{{ item.nombre }}</h4>
+              <p>Contacto: {{ item.contacto }}</p>
+              <label>{{item.descripcion }}</label>
+            </div>
+            <div class="botonVer">
+              <button (click)="verDetalle(item)" class="boton-v">Ver</button>
+            </div>
+          </div>
+        }
+
+        @if (resultados.length === 0) {
+          <div>
+            <p>No existen portafolios.</p>
+          </div>
+        }
+    </div>
+  }
+  @if (mostrarDetalleProyecto) {
+    <div class="detalle-proyecto">
+
+      <h2 class="titulo-proyecto">{{ proyectoSeleccionadoDetalle.nombre }}</h2>
+
+      <p class="descripcion">
+        <strong>Descripción:</strong> {{ proyectoSeleccionadoDetalle.descripcion }}
+      </p>
+
+      <p class="tipo">
+        <strong>Tipo:</strong> {{ proyectoSeleccionadoDetalle.tipo }}
+      </p>
+
+      <!-- TECNOLOGÍAS -->
+      @if (proyectoSeleccionadoDetalle.tecnologia?.length > 0) {
+        <div class="seccion">
+          <h3>Tecnologías utilizadas</h3>
+          <ul>
+            @for (tec of proyectoSeleccionadoDetalle.tecnologia; track $index) {
+              <li>{{ tec }}</li>
+            }
+          </ul>
+        </div>
+      }
+
+      <!-- ENLACES -->
+      @if (proyectoSeleccionadoDetalle.enlace?.length > 0) {
+        <div class="seccion">
+          <h3>Enlaces relacionados</h3>
+          <ul>
+            @for (url of proyectoSeleccionadoDetalle.enlace; track $index) {
+              <li>
+                <a href="{{ url }}" target="_blank">{{ url }}</a>
+              </li>
+            }
+          </ul>
+        </div>
+      }
+
+      <!-- ENLACES DE DESPLIEGUE -->
+      @if (proyectoSeleccionadoDetalle.enlace_despliegue?.length > 0) {
+        <div class="seccion">
+          <h3>Enlaces de despliegue</h3>
+          <ul>
+            @for (url2 of proyectoSeleccionadoDetalle.enlace_despliegue; track $index) {
+              <li>
+                <a href="{{ url2 }}" target="_blank">{{ url2 }}</a>
+              </li>
+            }
+          </ul>
+        </div>
+      }
+
+      <button class="btn-cerrar" (click)="cerrarProyectoDetalle()">Cerrar</button>
+    </div>
+  }
+  @if (pro_dis) {
+    <div class="prog-d">
+      <div class="prog-d">
+        <h2>Programadores Disponibles para Tutoria</h2>
+        
+        @for (programador of programadoresDisponibles; track programador.id) {
+          <div class="tarjeta-programador">
+            <img [src]="programador.foto" alt="Foto de {{ programador.nombre }}" class="prog-foto">
+            
+            <div class="prog-info">
+              <h3>{{ programador.nombre }}</h3>
+              <p class="especialidad">{{ programador.especialidad || 'Sin especialidad' }}</p>
+
+              @if (programador.horarios && programador.horarios.length > 0) {
+                <p>Horarios asignados:</p>
+                <ul class="horarios-list">
+                  @for (horario of programador.horarios; track $index) {
+                    <li>
+                      {{ horario.dia }}: {{ horario.horaInicio }} - {{ horario.horaFin }}
+                    </li>
+                  }
+                </ul>
+              } @else {
+                <p class="sin-horario">Horarios no publicados.</p>
+              }
+              
+              <button (click)="verDetalle(programador)" class="btn-detalle">Ver Detalle</button>
+              <button (click)="iniciarSolicitud(programador)" class="btn-detalle">Solicitar</button>
+            </div>
+          </div>
+        }
+
+        @if (programadoresDisponibles.length === 0) {
+          <p class="alerta-vacio">Actualmente no hay programadores con horarios asignados.</p>
+        }
+      </div>
+    </div>
+  }
+  @if (mostrarFormularioSolicitud) {
+    <div class="modal-solicitud-fondo">
+        <div class="modal-solicitud-contenido">
+            <h3>Solicitar Asesoría con {{ nombreProgramadorSeleccionado }}</h3>
+            
+            <label for="horario">Horario Deseado (Ej: Lunes 10:00):</label>
+            <input id="horario" type="text" [(ngModel)]="solicitudData.horarioSeleccionado" required>
+
+            <label for="mensaje">Mensaje para el Programador:</label>
+            <textarea id="mensaje" rows="4" [(ngModel)]="solicitudData.mensaje" required></textarea>
+
+            <div class="modal-acciones">
+                <button (click)="enviarSolicitud()" class="btn-primary">Enviar Solicitud</button>
+                <button (click)="mostrarFormularioSolicitud = false" class="btn-secondary">Cancelar</button>
+            </div>
+        </div>
+    </div>
+}
 </div>
+
+@if (mensaje) {
+  <div class="mensaje">
+    <button class="buscar-pro" (click)="tutoria()">Consultar tutoria</button>
+    <div class="mensaje-n">
+
+    </div>
+  </div>
+}

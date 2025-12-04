@@ -39,6 +39,13 @@
       try {
         const userCredential = await signInWithEmailAndPassword(auth, this.email, this.password);
         const user = userCredential.user;
+
+        try {
+          await user.reload();
+        } catch (error) {
+          console.warn("No se pudo recargar el perfil de Firebase Auth.", error);
+        }
+
         await this.verificarRolEnFirestore(user.uid, user.email, user);
       } catch (error: any) {
         alert(`Error al iniciar sesión: ${error.message}`);
@@ -78,9 +85,10 @@
       }
 
       let rolAsignado = "";
+      
 
       if (!userSnap) {
-        rolAsignado = "";
+        rolAsignado = "usuario";
 
         const displayName = user.displayName || "";
         const partes = displayName.split(" ");
@@ -114,7 +122,7 @@
 
       switch (rolAsignado) {
         case "admin":
-          this.router.navigate(['/']);
+          this.router.navigate(['/admin']);
           break;
 
         case "programador":
@@ -123,8 +131,6 @@
           if (!portafolioSnap.exists()) {
             await runInInjectionContext(this.injector, async () =>
               await setDoc(userProg, {
-                nombre: user.displayName || "",
-                foto: user.photoURL || null,
                 contacto: "",
                 descripcion:"",
                 especialidad: "",
@@ -132,6 +138,14 @@
               })
             );
           }
+
+          await runInInjectionContext(this.injector, async () =>
+            await setDoc(userProg, {
+              nombre: user.displayName || "",
+              foto: user.photoURL || null,
+            }, { merge: true }) 
+          );
+
           this.router.navigate(['/programador']);
           break;
 

@@ -172,38 +172,38 @@
 
   @if (mostrarContenidoBuscar) {
     <div class="perfil-usuario-card">
-  <h1>Perfil Personal</h1>
-  <a (click)="alternarEdicion()" class="icono-set-2"><i data-lucide="settings"></i></a>
+      <h1>Perfil Personal</h1>
+      <a (click)="alternarEdicion()" class="icono-set-2"><i data-lucide="settings"></i></a>
 
-  @if (modoEdicion) {
-    <img [src]="datosUsuario?.foto" class="foto-perfil">
+      @if (modoEdicion) {
+        <img [src]="datosUsuario?.foto" class="foto-perfil">
 
-    <a>Nombre</a>
-    <input type="text" [(ngModel)]="datosUsuario.nombre"> 
-    
-    <a>Apellido</a>
-    <input type="text" [(ngModel)]="datosUsuario.apellido">
-    
-    <a>Email</a>
-    <input type="text" [value]="datosUsuario?.email" readonly>
-    
-    <button (click)="guardarPerfil()">Guardar Cambios</button>
-  }
+        <a>Nombre</a>
+        <input type="text" [(ngModel)]="datosUsuario.nombre"> 
+        
+        <a>Apellido</a>
+        <input type="text" [(ngModel)]="datosUsuario.apellido">
+        
+        <a>Email</a>
+        <input type="text" [value]="datosUsuario?.email" readonly>
+        
+        <button (click)="guardarPerfil()">Guardar Cambios</button>
+      }
 
-  @if (!modoEdicion) {
-    <div class="sin-contenido">
-      <img [src]="datosUsuario?.foto" class="foto-perfil">
-      
-      <a>Nombre</a>
-      <br>
-      <a class="nombre-completo">{{ datosUsuario?.nombre }} {{ datosUsuario?.apellido }}</a>
-      <br>
-      
-      <a>Email</a>
-      <p class="email-visual">{{ datosUsuario?.email }}</p> 
+      @if (!modoEdicion) {
+        <div class="sin-contenido">
+          <img [src]="datosUsuario?.foto" class="foto-perfil">
+          
+          <a>Nombre</a>
+          <br>
+          <a class="nombre-completo">{{ datosUsuario?.nombre }} {{ datosUsuario?.apellido }}</a>
+          <br>
+          
+          <a>Email</a>
+          <p class="email-visual">{{ datosUsuario?.email }}</p> 
+        </div>
+      }
     </div>
-  }
-</div>
   }
 
   @if (mostrarPortAca || mostrarPortProf || crearNuevoPort) {

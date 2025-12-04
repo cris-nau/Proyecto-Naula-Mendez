@@ -6,7 +6,7 @@ import { createIcons, icons } from 'lucide';
 import { PLATFORM_ID } from '@angular/core';
 import { isPlatformBrowser, CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { doc, docData, Firestore, updateDoc, setDoc, arrayUnion, collection, collectionData, query, where, addDoc, deleteDoc  } from '@angular/fire/firestore';
+import { doc, docData, Firestore, updateDoc, setDoc, collection, collectionData, query, addDoc, deleteDoc  } from '@angular/fire/firestore';
 import { firstValueFrom, Observable, Subscription } from 'rxjs';
 import { FirestoreModule } from '@angular/fire/firestore';
 import { inject, Injector } from '@angular/core';
@@ -128,6 +128,13 @@ export class ProgramadorPagina implements OnInit {
         }
       });
     }
+    if (isPlatformBrowser(this.platformId)) {
+      onAuthStateChanged(auth, (user) => {
+        if (!user) {
+          this.router.navigate(['/']);
+        }
+      });
+    }
   }
 
   async ngOnInit() {
@@ -137,6 +144,14 @@ export class ProgramadorPagina implements OnInit {
     await this.obtenerDatosProg();
     await this.obtenerDatosPorAca();
     await this.cargarProyectosAca();
+  }
+
+  refrescarIconos() {
+    if (isPlatformBrowser(this.platformId)) {
+      setTimeout(() => {
+        createIcons({ icons });
+      }, 100);
+    }
   }
 
   async cargarProyectosAca() {
@@ -242,9 +257,7 @@ export class ProgramadorPagina implements OnInit {
   
 
   ngAfterViewInit(): void {
-    if (isPlatformBrowser(this.platformId)) {
-      createIcons({ icons });
-    }
+    this.refrescarIconos();
   }
 
   agregarRed() {
@@ -271,10 +284,12 @@ export class ProgramadorPagina implements OnInit {
     this.guardarEnFirestore(nuevaRed);
 
     this.redSocial = { nombre: "", icono: "", url: "" };
+    this.refrescarIconos();
   }
 
   eliminarRed(index: number) {
     this.datosProg.redes_sociales.splice(index, 1);
+    this.refrescarIconos();
   }
 
   async guardarEnFirestore(nuevaRed: any) {
@@ -285,10 +300,11 @@ export class ProgramadorPagina implements OnInit {
     await setDoc(userRef, this.datosProg, { merge: true });
 
     alert("Datos guardados correctamente");
+    this.refrescarIconos();
   }
 
   cerrarSesion() {
-      signOut(auth)
+    signOut(auth)
       .then(() => {
         console.log('Sesión cerrada correctamente');
         this.router.navigate(['/']);
@@ -296,7 +312,7 @@ export class ProgramadorPagina implements OnInit {
       .catch((error) => {
         console.error('Error al cerrar sesión:', error);
         alert('No se pudo cerrar sesión. Intente de nuevo.');
-      });
+    });
   }
   
   inicio() {
@@ -311,13 +327,7 @@ export class ProgramadorPagina implements OnInit {
     this.mostrarContenidoBuscar = false;
     this.mostrarPortProf = false;
     this.mostrarPortAca = false;
-    if (this.mostrarFuncionesPort) {
-      setTimeout(() => { 
-        if (isPlatformBrowser(this.platformId)) {
-          createIcons({ icons });
-        }
-      }, 0); 
-    }
+    this.refrescarIconos();
   }
 
   portafoliosAca() {
@@ -331,6 +341,7 @@ export class ProgramadorPagina implements OnInit {
     this.mostrarPortProf = false;
     this.mostrarPortAca = true;
     this.cargarProyectosAca();
+    this.refrescarIconos();
   }
 
   portafoliosProf() {
@@ -344,14 +355,17 @@ export class ProgramadorPagina implements OnInit {
     this.mostrarPortAca = false;
     this.mostrarPortProf = true;
     this.cargarProyectosProf();
+    this.refrescarIconos();
   }
 
   alternarEdicion() {
     this.modoEdicion = !this.modoEdicion;
+    this.refrescarIconos();
   }
 
   alternarEdicionPort() {
     this.modoEdicionGeneral = !this.modoEdicionGeneral;
+    this.refrescarIconos();
   }
 
   async guardarPerfil() {
@@ -382,6 +396,7 @@ export class ProgramadorPagina implements OnInit {
       console.error("Error al guardar perfil:", error);
       alert("No se pudieron guardar los cambios.");
     }
+    this.refrescarIconos();
   }
 
   perfil(){
@@ -389,20 +404,12 @@ export class ProgramadorPagina implements OnInit {
     this.mostrarPortProf = false;
     this.mostrarPortAca = false;
     this.mostrarContenidoBuscar = !this.mostrarContenidoBuscar;
-    if (this.mostrarContenidoBuscar) {
-      setTimeout(() => { 
-        if (isPlatformBrowser(this.platformId)) {
-          createIcons({ icons });
-        }
-      }, 0); 
-    }
+    this.refrescarIconos();
   }
 
-  // Renombramos: guardarPortAca -> guardarPortafolio
   async guardarPortafolio() {
     if (!this.usuarioActual) return;
 
-    // 1. DETERMINAR LA COLECCIÓN DE DESTINO
     let nombreColeccion: string;
     if (this.mostrarPortAca) {
       nombreColeccion = 'proyectos_aca';
@@ -415,10 +422,8 @@ export class ProgramadorPagina implements OnInit {
     }
 
     try {
-      // 2. CONSTRUIR LA RUTA BASE (programadores/{uid}/[nombreColeccion])
       const rutaColeccionBase = `programadores/${this.usuarioActual.uid}/${nombreColeccion}`;
 
-      // 3. DATOS A GUARDAR (Comunes para ambos tipos)
       const datosProyecto = {
         uid: this.usuarioActual.uid,
         nombre: this.nuevoPortAca.nombre,
@@ -429,34 +434,31 @@ export class ProgramadorPagina implements OnInit {
         enlace_despliegue: this.nuevoPortAca.enlace_despliegue,
       };
 
-      // 4. LÓGICA CONDICIONAL: EDITAR (updateDoc) vs. CREAR (addDoc)
+
       if (this.nuevoPortAca.id) {
-        // === EDITAR ===
         const docRef = doc(this.firestore, `${rutaColeccionBase}/${this.nuevoPortAca.id}`);
         await updateDoc(docRef, datosProyecto);
         alert(`Proyecto (${nombreColeccion}) actualizado correctamente`);
 
       } else {
-        // === CREAR NUEVO ===
         const colRef = collection(this.firestore, rutaColeccionBase);
         await addDoc(colRef, { ...datosProyecto, fechaCreacion: new Date() });
         alert(`Proyecto (${nombreColeccion}) creado exitosamente`);
       }
 
-      // 5. LIMPIEZA Y RECARGA
-      this.limpiarFormulario(); // Asume que esta función existe y limpia this.nuevoPortAca, this.tecTemp, etc.
-      
-      // Llamamos a la función de carga adecuada
+      this.limpiarFormulario(); 
+
       if (this.mostrarPortAca) {
         await this.cargarProyectosAca(); 
       } else if (this.mostrarPortProf) {
-        await this.cargarProyectosProf(); // NECESITAS IMPLEMENTAR ESTA FUNCIÓN
+        await this.cargarProyectosProf(); 
       }
 
     } catch (error) {
       console.error(`Error al guardar/editar en ${nombreColeccion}:`, error);
       alert("Hubo un error al procesar la solicitud.");
     }
+    this.refrescarIconos();
   }
 
   limpiarFormulario() {
@@ -483,6 +485,7 @@ export class ProgramadorPagina implements OnInit {
       this.nuevoPortAca.tecnologia.push(this.tecTemp.trim());
       this.tecTemp = "";
     }
+    this.refrescarIconos();
   }
 
   agregarEnlace() {
@@ -491,6 +494,7 @@ export class ProgramadorPagina implements OnInit {
       this.nuevoPortAca.enlace.push(this.enlaceTemp.trim());
       this.enlaceTemp = "";
     }
+    this.refrescarIconos();
   }
 
   agregarEnlaceDesp() {
@@ -499,11 +503,13 @@ export class ProgramadorPagina implements OnInit {
       this.nuevoPortAca.enlace_despliegue.push(this.enlaceDespTemp.trim());
       this.enlaceDespTemp = "";
     }
+    this.refrescarIconos();
   }
 
   portNuevo() {
     this.limpiarFormulario();
     this.crearNuevoPort = true;
+    this.refrescarIconos();
   }
 
   editarProyecto(port: any){
@@ -524,17 +530,14 @@ export class ProgramadorPagina implements OnInit {
   async eliminarProyecto(proyecto: any) {
     if (!this.usuarioActual || !proyecto.id) return;
 
-    // Confirmación al usuario antes de eliminar
     const confirmar = confirm(`¿Estás seguro de que quieres eliminar el proyecto "${proyecto.nombre}"? Esta acción es irreversible.`);
     
     if (!confirmar) {
-      return; // Cancelar la eliminación
+      return; 
     }
     
-    // 1. Deducir la colección objetivo
     let nombreColeccion: string;
-    // Asumimos que la lista actual que se está mostrando define el contexto
-    // También puedes basarte en variables de estado (this.mostrarPortAca)
+
     if (this.mostrarPortAca) { 
       nombreColeccion = 'proyectos_aca';
     } else if (this.mostrarPortProf) {
@@ -545,16 +548,13 @@ export class ProgramadorPagina implements OnInit {
     }
 
     try {
-      // 2. Construir la ruta completa del documento
       const rutaDoc = `programadores/${this.usuarioActual.uid}/${nombreColeccion}/${proyecto.id}`;
       const docRef = doc(this.firestore, rutaDoc);
 
-      // 3. Ejecutar la eliminación
       await deleteDoc(docRef);
 
       alert("Proyecto eliminado correctamente.");
 
-      // 4. Recargar la lista de proyectos activa
       if (this.mostrarPortAca) {
         await this.cargarProyectosAca(); 
       } else if (this.mostrarPortProf) {
@@ -565,9 +565,10 @@ export class ProgramadorPagina implements OnInit {
       console.error("Error al eliminar el proyecto:", error);
       alert("Hubo un error al intentar eliminar el proyecto.");
     }
+    this.refrescarIconos();
   }
 
   mensajes() {
-    
+    this.refrescarIconos();
   }
 }

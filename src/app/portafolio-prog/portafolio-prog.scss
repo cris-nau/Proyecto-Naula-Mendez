@@ -118,6 +118,28 @@
   }
 }
 
+.funciones {
+    display: flex;
+    justify-content: center;
+    padding: 40px 20px;
+    background-color: var(--color-background-soft, #f4f4f4);
+    border-radius: 25px;
+    min-height: 80vh;
+}
+
+
+.funciones > div {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    max-width: 1200px;
+    padding: 30px;
+    background-color: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    position: relative;
+}
+
 .form-group {
     text-align: left;
     margin-bottom: 20px;
@@ -133,7 +155,7 @@
 
     input {
       font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
-      width: 95%;
+      width: 100%;
       max-width: 500px;
       padding: 10px 12px;
       color : var(--color-text-medium);
@@ -156,7 +178,8 @@
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   gap: 16px;
-  margin-top: 20px;
+  margin-top: 50px;
+  margin-left: -200px;
   @media (max-width: 900px) {
       margin-left: 0; 
       width: 100%;
@@ -165,14 +188,82 @@
   }
 }
 
+.grid-cards-g {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 16px;
+  margin-top: 50px;
+  margin-left: 0px;
+  @media (max-width: 200px) {
+      margin-left: 0; 
+      width: 50%;
+      max-width: 50px;
+      padding: 20px; 
+  }
 
-.tarjeta-portafolio {
+  .tarjeta-portafolio {
+    max-width: 500px;
+    height: 180px;
     background: #fff;
     padding: 12px;
     border-radius: 12px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.556);
-    text-align: center;
     transition: transform 0.2s;
+    .port-t {
+      margin-left: 200px;
+      margin-top: -120px;
+    }
+
+    .botonVer {
+      margin-left: 400px;
+      margin-top: -120px;
+
+      .boton-v {
+        background: #70a5dd;
+        color: white;
+        border: none;
+        padding: 10px 14px;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 15px;
+        &:hover {
+          background: #005bbf;
+        }
+      }
+    }
+  }
+}
+
+
+.tarjeta-portafolio {
+  max-width: 900px;
+  height: 180px;
+    background: #fff;
+    padding: 12px;
+    border-radius: 12px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.556);
+    transition: transform 0.2s;
+  .port-t {
+    margin-left: 200px;
+    margin-top: -120px;
+  }
+
+  .botonVer {
+    margin-left: 800px;
+
+    .boton-v {
+      background: #70a5dd;
+      color: white;
+      border: none;
+      padding: 10px 14px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 15px;
+      &:hover {
+        background: #005bbf;
+      }
+    }
+  }
 }
 
 
@@ -181,9 +272,499 @@
 }
 
 
-.tarjeta-portafolio img {
-    width: 40%;
-    height: 120px; 
-    object-fit: cover;
-    border-radius: 8px;
+.img-pro {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+
+
+.portafolio-vista-solo-lectura {
+    display: flex;
+}
+
+.datosPersonales {
+    width: 270px;
+    height: 520px;
+    border-radius: 20px;
+    padding: 20px;
+    background-color: rgb(255, 255, 255);
+    text-align: center;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.225);
+}
+
+.datosGenerales {
+    width: 860px;
+    height: 520px;
+    border-radius: 20px;
+    padding: 20px;
+    margin-top: -520px;
+    background-color: rgb(255, 255, 255);
+    
+    margin-left: 280px;
+    
+    
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.225);
+    overflow-y: auto;
+    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+    text-align: left;
+
+    .nombre-completo {
+        font-weight: 700;
+        font-size: 1.1em;
+        display: block; 
+        margin-bottom: 10px;
+        color: #333;
+    }
+
+    hr {
+        
+        border: none;
+        border-top: 1px solid #eee;
+        margin: 20px 0;
+    }
+
+    .seccion-proyectos {
+        margin-bottom: 20px;
+
+        p {
+            font-style: italic;
+            color: #777;
+            margin-bottom: 10px;
+        }
+
+        > button {
+            background: #70a5dd;
+            color: white;
+            border: none;
+            padding: 10px 14px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 15px;
+            transition: background 0.2s ease;
+
+            &:hover {
+              background: #005bbf;
+            }
+
+            &:active {
+              transform: scale(0.97);
+            }
+        }
+    }
+
+    .lista-proyectos-edicion {
+        display: flex;
+        justify-content: space-between;
+        gap: 8px;
+        margin-bottom: 15px;
+        padding-left: 0;
+    }
+
+    .tarjeta-portafolio-min {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 8px 12px;
+        background-color: #fff;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+
+        .nombre-proyecto {
+            font-size: 1em;
+            font-weight: 500;
+            color: #2c3e50;
+            flex-grow: 1;
+        }
+
+        .tarjeta-portafolio-min button {
+            background-color: blue !important;
+            color: yellow !important;
+            padding: 5px !important;
+            /* Asegúrate de que no haya un width/height de 0 o display: none */
+        }
+    }
+}
+
+.portafolio-cerrar-btn{
+  background: #70a5dd;
+  color: white;
+  border: none;
+  padding: 10px 14px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 15px;
+
+            &:hover {
+              background: #005bbf;
+            }
+
+            &:active {
+              transform: scale(0.97);
+            }
+
+}
+
+.portafolio-cerrar-btn + .buscar-pro {
+    margin-left: 10px; 
+}
+
+.buscar-pro{
+  bottom:  0;
+  background: #70a5dd;
+  color: white;
+  border: none;
+  padding: 10px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 15px;
+  &:hover {
+    background: #005bbf;
+  }
+}
+
+.sin-contenido {
+    text-align: center;
+    padding: 1px;
+}
+
+.foto-perfil-p {
+    width: 150px;
+    border-radius: 50%;
+}
+
+.info-general {
+    text-align: left;
+}
+
+.redes_sociales_icono {
+    width: 0.9rem; 
+    height: 0.9rem; 
+    color: var(--color-primary);
+}
+
+.seccion-proyectos {
+    margin-bottom: 20px;
+    
+    .nombre-completo { // Estilo para los títulos de sección dentro de .datosGenerales
+        font-weight: 700;
+        font-size: 1.1em;
+        display: block;
+        margin-bottom: 10px;
+        color: #333;
+    }
+    
+    p {
+        font-style: italic;
+        color: #777;
+        margin-bottom: 10px;
+    }
+}
+
+.lista-proyectos-edicion {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 15px;
+    padding-left: 0;
+}
+
+.tarjeta-portafolio-min {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 12px;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    
+    .nombre-proyecto {
+        font-size: 1em;
+        font-weight: 500;
+        color: #2c3e50;
+        flex-grow: 1;
+    }
+
+    .folder{
+      width: 20px;
+      margin-top: 5px;
+    }
+
+    .folder:hover {
+      color: var(--color-accent);
+    }
+}
+
+hr {
+    border: none;
+    border-top: 1px solid #eee;
+    margin: 20px 0;
+}
+
+.detalle-proyecto {
+  overflow-y: auto;
+  background: #fff;
+  padding: 2rem;
+  border-radius: 14px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  max-width: 650px;
+  margin: auto;
+  font-family: "Inter", sans-serif;
+  animation: fadeIn 0.2s ease-in;
+
+  h2 {
+    text-align: center;
+    font-size: 2rem;
+    margin-bottom: 1rem;
+    color: #1e3a8a;
+  }
+
+  .descripcion, .tipo {
+    background: #f1f5f9;
+    padding: 8px 12px;
+    border-radius: 10px;
+    margin-bottom: 1rem;
+    border-left: 4px solid #3b82f6;
+  }
+
+  .seccion {
+    margin-top: 1.8rem;
+
+    h3 {
+      margin-bottom: 0.8rem;
+      font-size: 1.3rem;
+      color: #1f2937;
+      border-bottom: 2px solid #e5e7eb;
+      padding-bottom: 4px;
+    }
+
+    ul {
+      list-style: none;
+      padding: 0;
+      
+      li {
+        background: #e0f2fe;
+        border: 1px solid #bae6fd;
+        padding: 8px 12px;
+        margin-bottom: 8px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+
+        a {
+          text-decoration: none;
+          color: #0369a1;
+          font-weight: 500;
+
+          &:hover {
+            text-decoration: underline;
+          }
+        }
+      }
+    }
+  }
+
+  .btn-cerrar {
+    width: 20%;
+    margin-top: 2rem;
+    padding: 12px;
+    border: none;
+    border-radius: 10px;
+    background-color: #a96fc886;
+    color: white;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: 0.2s;
+
+    &:hover {
+      background-color: #c796cca1;
+    }
+  }
+}
+
+/* Animación suave */
+@keyframes fadeIn {
+  from {
+      opacity: 0;
+      transform: translateY(10px);
+  }
+  to {
+      opacity: 1;
+      transform: translateY(0);
+  }
+}
+
+.mensaje-n {
+  background-color: #b8cadc8f;
+  margin-top: 10px;
+  z-index: 999999;      
+  width: 215px;
+  height: 320px;
+  max-width: 500px;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.25);
+}
+
+.mensaje {
+  position: fixed;       
+  top: 200px;         
+  left: 200px;
+  
+  background: #fafafa;    
+  color: rgb(0, 0, 0);
+  padding: 12px 18px;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.25);
+
+  z-index: 999998;      
+  width: 250px;
+  height: 400px;
+  max-width: 500px;
+
+  animation: fadeIn 0.25s ease-out;
+}
+
+.mensaje.hide {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+
+.horarios-list {
+    list-style: none;
+    padding: 0;     
+    margin-top: 5px; 
+    margin-bottom: 15px;
+}
+
+.horarios-list li {
+    display: flex; 
+    justify-content: space-between; 
+    background-color: #f8f9fa; 
+    border-radius: 4px; 
+    padding: 8px 12px;
+    margin-bottom: 6px; 
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05); 
+    font-size: 0.95em;
+    color: #333;
+}
+
+
+.horarios-list li {
+    font-weight: 500; 
+}
+
+.horarios-list li:hover {
+    background-color: #e9ecef; 
+    transition: background-color 0.2s;
+}
+
+
+.prog-d {
+    padding: 20px;
+}
+
+
+.tarjeta-programador {
+    display: flex;
+    align-items: flex-start; 
+    
+    background-color: #ffffff;
+    border: 1px solid #e0e0e0;
+    border-radius: 12px;
+    padding: 15px;
+    margin-bottom: 20px;
+    
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.08); 
+    
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+.tarjeta-programador:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+}
+
+
+.prog-foto {
+    width: 80px; 
+    height: 80px; 
+    object-fit: cover; 
+    border-radius: 50%; 
+    border: 3px solid #494d51; 
+    margin-right: 15px; 
+    flex-shrink: 0; 
+}
+
+.prog-info {
+    flex-grow: 1;
+
+    h3 {
+        margin-top: 0;
+        margin-bottom: 4px;
+        color: #343a40;
+        font-size: 1.2em;
+    }
+
+    .especialidad {
+        color: #6c757d;
+        font-style: italic;
+        margin-bottom: 10px;
+    }
+
+    .sin-horario {
+        color: #dc3545;
+        font-weight: bold;
+    }
+}
+
+
+.prog-info button {
+    padding: 8px 15px;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: background-color 0.2s;
+}
+
+
+.prog-info button + button {
+    margin-left: 10px; 
+}
+
+
+.btn-detalle:first-of-type {
+    background-color: var(--color-accent);
+    color: white;
+    border: none;
+
+    &:hover {
+        background-color: var(--color-primary);
+    }
+}
+
+.btn-detalle:last-of-type {
+    background-color: #955f9f7d;
+    color: #ffffff;
+    border: none;
+    
+    &:hover {
+        background-color: #89189d92;
+    }
 }
