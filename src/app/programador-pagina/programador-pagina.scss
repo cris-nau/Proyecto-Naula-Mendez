@@ -687,6 +687,7 @@
 }
 
 .mensaje {
+  overflow-y: auto;
   font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
   position: fixed;       
   top: 200px;         
