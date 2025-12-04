@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 
 import { auth } from '../firebase-config'; 
-import { signOut, onAuthStateChanged, createUserWithEmailAndPassword } from 'firebase/auth';
+import { signOut, onAuthStateChanged, createUserWithEmailAndPassword, getAuth } from 'firebase/auth';
 import { 
   Firestore, 
   collection, 
@@ -69,7 +69,7 @@ mostrarListaProgramadores: boolean = true;
     apellido: '',
     email: '',
     especialidad: '',
-    foto: '',
+    foto: 'https://i.pinimg.com/236x/9b/47/a0/9b47a023caf29f113237d61170f34ad9.jpg',
     activo: true,
     horarios: []
   };
@@ -82,6 +82,7 @@ mostrarListaProgramadores: boolean = true;
 
   private firestore = inject(Firestore);
   private injector = inject(Injector);
+  
 
   constructor(
     private router: Router, 
@@ -166,43 +167,73 @@ mostrarListaProgramadores: boolean = true;
   }
 
   async guardarCambiosProgramador() {
-    if (!this.programadorSeleccionado.nombre || !this.programadorSeleccionado.email) {
-      alert("Nombre y Email son obligatorios.");
-      return;
+    if (!this.programadorSeleccionado.nombre || !this.programadorSeleccionado.email || !this.programadorSeleccionado.password) {
+        alert("Nombre, Email y Contraseña son obligatorios.");
+        return;
     }
 
     try {
-      const datosAGuardar = {
-        nombre: this.programadorSeleccionado.nombre,
-        apellido: this.programadorSeleccionado.apellido,
-        email: this.programadorSeleccionado.email,
-        especialidad: this.programadorSeleccionado.especialidad,
-        horarios: this.programadorSeleccionado.horarios,
-        activo: true 
-      };
+        const datosAGuardar = {
+            nombre: this.programadorSeleccionado.nombre,
+            apellido: this.programadorSeleccionado.apellido,
+            email: this.programadorSeleccionado.email,
+            especialidad: this.programadorSeleccionado.especialidad,
+            horarios: this.programadorSeleccionado.horarios,
+            foto: this.programadorSeleccionado.foto,
+            activo: true
+        };
 
-      if (this.programadorSeleccionado.id) {
-        const docRef = doc(this.firestore, `programadores/${this.programadorSeleccionado.id}`);
-        await updateDoc(docRef, datosAGuardar);
-        alert("Programador actualizado correctamente.");
-      } else {
-        
-        const colRef = collection(this.firestore, 'programadores');
-        await addDoc(colRef, {
-            ...datosAGuardar,
+        const datosUsuario = {
+            nombre: this.programadorSeleccionado.nombre,
+            apellido: this.programadorSeleccionado.apellido,
+            correo: this.programadorSeleccionado.email,
+            foto: "https://i.pinimg.com/236x/9b/47/a0/9b47a023caf29f113237d61170f34ad9.jpg",
+            rol: 'programador', 
             fechaRegistro: new Date()
-        });
-        
-        alert("Programador registrado en la base de datos.");
-      }
+        };
 
-      this.verGestionProgramadores(); 
 
-    } catch (error) {
-      console.error("Error al guardar programador:", error);
-      alert("Error al guardar los datos.");
+        if (this.programadorSeleccionado.id) {
+            const docRef = doc(this.firestore, `programadores/${this.programadorSeleccionado.id}`);
+            await updateDoc(docRef, datosAGuardar);
+
+            const userDocRef = doc(this.firestore, `usuarios/${this.programadorSeleccionado.id}`);
+            await updateDoc(userDocRef, datosUsuario);
+
+            alert("Programador actualizado correctamente.");
+        } else {
+            const userCredential = await createUserWithEmailAndPassword(
+                auth,
+                this.programadorSeleccionado.email,
+                this.programadorSeleccionado.password 
+            );
+            
+            const newProgrammerUID = userCredential.user.uid;
+            
+            const progDocRef = doc(this.firestore, 'programadores', newProgrammerUID);
+            await setDoc(progDocRef, {
+                ...datosAGuardar,
+                fechaRegistro: new Date()
+            });
+            const userDocRef = doc(this.firestore, 'usuarios', newProgrammerUID);
+            await setDoc(userDocRef, datosUsuario);
+            
+            alert("Programador registrado en Auth y Firestore con éxito.");
+        }
+
+        this.verGestionProgramadores();
+
+    } catch (error: any) {
+        console.error("Error al guardar programador:", error);
+        if (error.code === 'auth/email-already-in-use') {
+            alert("Error: El correo ya está registrado en Firebase Authentication.");
+        } else if (error.code === 'auth/weak-password') {
+            alert("Error: La contraseña debe tener al menos 6 caracteres.");
+        } else {
+            alert("Error al guardar los datos: " + error.message);
+        }
     }
-  }
+}
 
   async eliminarProgramador(prog: any) {
     if (!confirm(`¿Estás seguro de eliminar a ${prog.nombre}? Esta acción no se puede deshacer.`)) {
@@ -230,7 +261,7 @@ mostrarListaProgramadores: boolean = true;
       apellido: '',
       email: '',
       especialidad: '',
-      foto: '',
+      foto: 'https://i.pinimg.com/236x/9b/47/a0/9b47a023caf29f113237d61170f34ad9.jpg',
       activo: true,
       horarios: []
     };

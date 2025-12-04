@@ -149,20 +149,7 @@
                     <p>No hay proyectos profesionales para mostrar.</p>
                 }
               </div>
-          @for (programador of programadoresDisponibles; track programador.id) {
-            @if (programador.horarios && programador.horarios.length > 0) {
-              <p>Horarios disponibles:</p>
-              <ul class="horarios-list">
-                @for (horario of programador.horarios; track $index) {
-                  <li>
-                    {{ horario.dia }}: {{ horario.horaInicio }} - {{ horario.horaFin }}
-                  </li>
-                }
-              </ul>
-            } @else {
-              <p class="sin-horario">Horarios no publicados.</p>
-            }
-          }
+          
           <button class="portafolio-cerrar-btn" (click)="cerrarDetalle()">Cerrar</button>
           <button class="buscar-pro" (click)="tutoria()">Consultar tutoria</button>
         </div>
@@ -180,8 +167,7 @@
               <h4>{{ item.nombre }}</h4>
               <p>Contacto: {{ item.contacto }}</p>
               <label>{{item.descripcion }}</label>
-            </div>
-            <div class="botonVer">
+              <hr>
               <button (click)="verDetalle(item)" class="boton-v">Ver</button>
             </div>
           </div>
@@ -207,7 +193,7 @@
         <strong>Tipo:</strong> {{ proyectoSeleccionadoDetalle.tipo }}
       </p>
 
-      <!-- TECNOLOGÍAS -->
+      
       @if (proyectoSeleccionadoDetalle.tecnologia?.length > 0) {
         <div class="seccion">
           <h3>Tecnologías utilizadas</h3>
@@ -219,7 +205,7 @@
         </div>
       }
 
-      <!-- ENLACES -->
+      
       @if (proyectoSeleccionadoDetalle.enlace?.length > 0) {
         <div class="seccion">
           <h3>Enlaces relacionados</h3>
@@ -233,7 +219,7 @@
         </div>
       }
 
-      <!-- ENLACES DE DESPLIEGUE -->
+      
       @if (proyectoSeleccionadoDetalle.enlace_despliegue?.length > 0) {
         <div class="seccion">
           <h3>Enlaces de despliegue</h3>
@@ -289,30 +275,63 @@
     </div>
   }
   @if (mostrarFormularioSolicitud) {
-    <div class="modal-solicitud-fondo">
-        <div class="modal-solicitud-contenido">
-            <h3>Solicitar Asesoría con {{ nombreProgramadorSeleccionado }}</h3>
-            
-            <label for="horario">Horario Deseado (Ej: Lunes 10:00):</label>
-            <input id="horario" type="text" [(ngModel)]="solicitudData.horarioSeleccionado" required>
+    <div class="modal-solicitud-contenido">
+      <h3>Solicitar Asesoría con {{ nombreProgramadorSeleccionado }}</h3>
+      
+      <label for="horario">Horario Disponible:</label>
+      <select id="horario" [(ngModel)]="solicitudData.horarioSeleccionado" required>
+          <option value="" disabled selected>Selecciona un horario</option>
+          
+          @for (horario of horariosProgramadorSeleccionado; track $index) {
+              <option [ngValue]="formatearHorario(horario)">
+                  {{ horario.dia }}: {{ horario.horaInicio }} - {{ horario.horaFin }}
+              </option>
+          }
+      </select>
+      <label for="mensaje">Mensaje para el Programador:</label>
+      <textarea id="mensaje" rows="4" [(ngModel)]="solicitudData.mensaje" required></textarea>
 
-            <label for="mensaje">Mensaje para el Programador:</label>
-            <textarea id="mensaje" rows="4" [(ngModel)]="solicitudData.mensaje" required></textarea>
-
-            <div class="modal-acciones">
-                <button (click)="enviarSolicitud()" class="btn-primary">Enviar Solicitud</button>
-                <button (click)="mostrarFormularioSolicitud = false" class="btn-secondary">Cancelar</button>
-            </div>
-        </div>
+      <div class="modal-acciones">
+          <button (click)="enviarSolicitud()" class="btn-primary" [disabled]="!solicitudData.horarioSeleccionado">
+              Enviar Solicitud
+          </button>
+          <button (click)="mostrarFormularioSolicitud = false" class="btn-secondary">Cancelar</button>
+      </div>
     </div>
 }
 </div>
 
 @if (mensaje) {
   <div class="mensaje">
-    <button class="buscar-pro" (click)="tutoria()">Consultar tutoria</button>
-    <div class="mensaje-n">
+    <h3>📬 Estado de tus Asesorías</h3>
 
-    </div>
+        @if (solicitudesEnviadas.length === 0) {
+            <p class="alerta-info">Aún no has enviado ninguna solicitud de tutoría.</p>
+        } @else {
+            <div class="lista-solicitudes-usuario">
+                @for (solicitud of solicitudesEnviadas; track solicitud.id) {
+                    
+                    <div class="tarjeta-estado-usuario estado-{{ solicitud.estado | lowercase }}">
+                        
+                        <div class="header-estado">
+                            <span class="etiqueta-estado">Estado: 
+                                @if (solicitud.estado === 'Aceptada') {
+                                    <i data-lucide="check-circle" class="icono-estado"></i> Aceptada
+                                } @else if (solicitud.estado === 'Rechazada') {
+                                    <i data-lucide="x-circle" class="icono-estado"></i> Rechazada
+                                } @else {
+                                    <i data-lucide="clock" class="icono-estado"></i> Pendiente
+                                }
+                            </span>
+                        </div>
+                        
+                        <p>Programador: <br><strong>{{ solicitud.programadorNombre }}</strong></p> 
+                        <p>Horario solicitado: <br><strong>{{ solicitud.horario }}</strong></p>
+                    </div>
+                }
+            </div>
+        }
+        
+        <button class="btn-cerrar-mensaje" (click)="mensaje = false">Cerrar</button>
   </div>
 }

@@ -12,6 +12,17 @@ import { FirestoreModule } from '@angular/fire/firestore';
 import { inject, Injector } from '@angular/core';
 import { runInInjectionContext } from '@angular/core';
 
+interface Solicitud {
+  id: string;
+  usuarioUid: string;
+  usuarioEmail: string; 
+  usuarioId: string;
+  horario: string;
+  mensaje: string;
+  estado: 'Pendiente' | 'Aceptada' | 'Rechazada';
+  fechaCreacion?: any;
+}
+
 interface DatosProgramador {
   nombre: string,
   contacto: string,
@@ -76,10 +87,13 @@ export class ProgramadorPagina implements OnInit {
   enlaceTemp = "";
   enlaceDespTemp = "";
 
+  mostrarMensajes: boolean = false; 
+  solicitudesRecibidas: Solicitud[] = [];
+
   datosProg: DatosProgramador = {
     nombre: "",
     contacto: "",
-    foto: "",
+    foto: "https://i.pinimg.com/236x/9b/47/a0/9b47a023caf29f113237d61170f34ad9.jpg",
     especialidad: "",
     descripcion: "",
     redes_sociales: []
@@ -144,6 +158,57 @@ export class ProgramadorPagina implements OnInit {
     await this.obtenerDatosProg();
     await this.obtenerDatosPorAca();
     await this.cargarProyectosAca();
+    await this.cargarSolicitudesRecibidas();
+  }
+
+  async cargarSolicitudesRecibidas() {
+    if (!this.usuarioActual) return;
+
+    await runInInjectionContext(this.injector, async () => {
+      const colRef = collection(this.firestore, 'solicitudes');
+      
+      const q = query(colRef);
+
+      const todasSolicitudes: any[] = await firstValueFrom(
+        collectionData(q, { idField: 'id' })
+      );
+      this.solicitudesRecibidas = todasSolicitudes
+        .filter(s => s.programadorId === this.usuarioActual.uid)
+        .map(s => ({ 
+            ...s, 
+            id: s.id,
+            horario: s.horario,
+            estado: s.estado || 'Pendiente' 
+        })) as Solicitud[];
+
+      console.log("Solicitudes recibidas cargadas:", this.solicitudesRecibidas);
+    });
+  }
+
+  async responderSolicitud(solicitudId: string, nuevoEstado: 'Aceptada' | 'Rechazada') {
+    if (!this.usuarioActual) return;
+
+    try {
+        const docRef = doc(this.firestore, 'solicitudes', solicitudId);
+        
+        await updateDoc(docRef, {
+            estado: nuevoEstado,
+            fechaRespuesta: new Date()
+        });
+        
+        alert(`Solicitud ${solicitudId} ha sido marcada como: ${nuevoEstado}.`);
+        await this.cargarSolicitudesRecibidas(); 
+        
+    } catch (error) {
+        console.error("Error al responder la solicitud:", error);
+        alert("Ocurrió un error al actualizar el estado.");
+    }
+  }
+
+  mensajes() {
+      this.mostrarMensajes = !this.mostrarMensajes;
+      this.cargarSolicitudesRecibidas(); 
+      this.refrescarIconos();
   }
 
   refrescarIconos() {
@@ -175,7 +240,6 @@ export class ProgramadorPagina implements OnInit {
     if (!this.usuarioActual) return;
 
     await runInInjectionContext(this.injector, async () => {
-      // Apuntamos a la subcolección de profesionales
       const colRef = collection(this.firestore, `programadores/${this.usuarioActual.uid}/proyectos_prof`);
 
       this.portProfLista = await firstValueFrom(
@@ -226,7 +290,7 @@ export class ProgramadorPagina implements OnInit {
     this.datosProg = {
       nombre: data?.nombre || "",
       contacto: data?.contacto || "",
-      foto: data?.foto || "",
+      foto: data?.foto || "https://i.pinimg.com/236x/9b/47/a0/9b47a023caf29f113237d61170f34ad9.jpg",
       especialidad: data?.especialidad || "",
       descripcion: data?.descripcion || "",
       redes_sociales: data?.redes_sociales || []
@@ -255,6 +319,7 @@ export class ProgramadorPagina implements OnInit {
     };
   }
   
+  
 
   ngAfterViewInit(): void {
     this.refrescarIconos();
@@ -276,7 +341,6 @@ export class ProgramadorPagina implements OnInit {
         this.datosProg.redes_sociales[indexExistente] = nuevaRed;
         alert(`Red social (${nuevaRed.icono}) actualizada localmente.`);
     } else {
-        // 4. SI NO EXISTE (Agregar el nuevo objeto local)
         this.datosProg.redes_sociales.push(nuevaRed);
         alert(`Nueva red social (${nuevaRed.icono}) agregada localmente.`);
     }
@@ -565,10 +629,6 @@ export class ProgramadorPagina implements OnInit {
       console.error("Error al eliminar el proyecto:", error);
       alert("Hubo un error al intentar eliminar el proyecto.");
     }
-    this.refrescarIconos();
-  }
-
-  mensajes() {
     this.refrescarIconos();
   }
 }

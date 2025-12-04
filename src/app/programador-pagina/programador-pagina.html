@@ -48,7 +48,7 @@
     }
 
     <a (click)="mensajes()"><li><i data-lucide="message-circle" class="icono"></i></li></a>
-    <a (click)="perfil()"><li id="perfil"><i data-lucide="user" class="icono-set"></i></li></a>
+    <a (click)="perfil()"><li><i data-lucide="user" class="icono-set"></i></li></a>
   </ul>
 </div>
 
@@ -388,3 +388,48 @@
   </div>
   }
 </div>
+
+@if (mostrarMensajes) {
+  <div class="mensaje">
+    <h2>📩 Solicitudes de Asesoría Recibidas</h2>
+        
+        @if (solicitudesRecibidas.length === 0) {
+            <p class="alerta-vacio">No hay solicitudes pendientes en este momento.</p>
+        } @else {
+            <div class="lista-solicitudes">
+                @for (solicitud of solicitudesRecibidas; track solicitud.id) {
+                    <div class="tarjeta-solicitud estado-{{ solicitud.estado | lowercase }}">
+                        
+                        <div class="solicitud-header">
+                            <p>Usuario solicitante: <br><strong>{{ solicitud.usuarioEmail || solicitud.usuarioId }}</strong></p>
+                        </div>
+                        
+                        <div class="solicitud-detalle">
+                            <p>Horario propuesto: <br><strong>{{ solicitud.horario }}</strong></p>
+                            @if(solicitud.mensaje != ""){
+                              <p class="mensaje-cuerpo">Mensaje: <em>"{{ solicitud.mensaje }}"</em></p>
+                            }
+                        </div>
+
+                        @if (solicitud.estado === 'Pendiente') {
+                            <div class="solicitud-acciones">
+                                <button 
+                                    (click)="responderSolicitud(solicitud.id, 'Aceptada')" 
+                                    class="btn-aceptar">
+                                    Aceptar
+                                </button>
+                                <button 
+                                    (click)="responderSolicitud(solicitud.id, 'Rechazada')" 
+                                    class="btn-rechazar">
+                                    Rechazar
+                                </button>
+                            </div>
+                        } @else {
+                            <p class="respuesta-final">Esta solicitud ya fue procesada.</p>
+                        }
+                    </div>
+                }
+            </div>
+        }
+  </div>
+}

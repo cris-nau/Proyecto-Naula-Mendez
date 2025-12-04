@@ -4,7 +4,7 @@ import { createIcons, icons } from 'lucide';
 import { PLATFORM_ID } from '@angular/core';
 import { isPlatformBrowser, CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Firestore, addDoc, collection, collectionData } from '@angular/fire/firestore';
+import { Firestore, addDoc, collection, collectionData, query, where } from '@angular/fire/firestore';
 import { doc, docData } from '@angular/fire/firestore';
 import { Observable, Subscription } from 'rxjs';
 import { auth } from '../firebase-config';
@@ -89,6 +89,9 @@ export class PortafolioProg implements OnInit, OnDestroy, AfterViewInit{
   resultados1: ProgramadorCompleto[] = [];
 
   mostrarFormularioSolicitud: boolean = false;
+  horariosProgramadorSeleccionado: any[] = [];
+
+  solicitudesEnviadas: any[] = [];
 
   solicitudData: any = {
     programadorId: '',
@@ -198,6 +201,11 @@ export class PortafolioProg implements OnInit, OnDestroy, AfterViewInit{
     this.mostrarContenidoBuscar = true;
     this.mostrarContenido = true;
     this.buscarP = true;
+    this.mostrarDetalleProyecto = false;
+    this.mensaje = false;
+    this.mostrarDetalle = false;
+    this.pro_dis = false;
+    this.mostrarFormularioSolicitud = false;
     this.refrescarIconos();
   }
 
@@ -206,6 +214,10 @@ export class PortafolioProg implements OnInit, OnDestroy, AfterViewInit{
     this.buscarP = false;
     this.mostrarContenido = false;
     this.mostrarContenidoBuscar = false;
+    this.mostrarDetalleProyecto = false;
+    this.mensaje = false;
+    this.pro_dis = false;
+    this.mostrarFormularioSolicitud = false;
     this.mostrarContenidoG = !this.mostrarContenidoG;
     this.refrescarIconos();
   }
@@ -248,24 +260,45 @@ export class PortafolioProg implements OnInit, OnDestroy, AfterViewInit{
         foto: datosPrincipales.foto || item.foto, 
         contacto: datosPrincipales.contacto || item.contacto,
     };
-    this.mostrarDetalle = true;
-    this.mostrarContenidoBuscar = false;
 
+    this.mostrarDetalle = true;
+    this.buscarP = false;
+    this.mostrarContenido = false;
+    this.mostrarContenidoBuscar = false;
+    this.mostrarContenidoG = false;
+    this.mostrarDetalleProyecto = false;
+    this.mensaje = false;
+    this.pro_dis = false;
+    this.mostrarFormularioSolicitud = false;
     this.refrescarIconos();
   }
 
 
   cerrarDetalle() {
-    this.mostrarDetalle = false;
     this.portafolioSeleccionado = null;
+
+    this.mostrarDetalle = false;
+    this.buscarP = false;
+    this.mostrarContenido = false;
     this.mostrarContenidoBuscar = true;
+    this.mostrarContenidoG = false;
+    this.mostrarDetalleProyecto = false;
+    this.mensaje = false;
+    this.pro_dis = false;
+    this.mostrarFormularioSolicitud = false;
     this.refrescarIconos();
   }
 
   async verProyectoDetalle(proyecto: any, tipo: 'aca' | 'prof') {
+    this.mostrarDetalle = false;
+    this.buscarP = false;
+    this.mostrarContenido = false;
+    this.mostrarContenidoBuscar = false;
     this.mostrarContenidoG = false;
-    this.mostrarDetalle = false;           
-    this.mostrarDetalleProyecto = true; 
+    this.mostrarDetalleProyecto = true;
+    this.mensaje = false;
+    this.pro_dis = false;
+    this.mostrarFormularioSolicitud = false;
     setTimeout(() => {
       if (isPlatformBrowser(this.platformId)) createIcons({ icons });
     }, 0);
@@ -297,9 +330,16 @@ export class PortafolioProg implements OnInit, OnDestroy, AfterViewInit{
   }
 
   cerrarProyectoDetalle() {
-    this.mostrarDetalleProyecto = false;
+
     this.mostrarDetalle = true;
-    this.mostrarContenidoBuscar = true; 
+    this.buscarP = false;
+    this.mostrarContenido = false;
+    this.mostrarContenidoBuscar = true;
+    this.mostrarContenidoG = false;
+    this.mostrarDetalleProyecto = false;
+    this.mensaje = false;
+    this.pro_dis = false;
+    this.mostrarFormularioSolicitud = false;
     this.refrescarIconos();
   }
 
@@ -310,12 +350,24 @@ export class PortafolioProg implements OnInit, OnDestroy, AfterViewInit{
     this.mostrarDetalle = false;
     this.mostrarContenidoBuscar = false;
     this.buscarP = false;
+    this.mostrarFormularioSolicitud = false;
     this.pro_dis = true;
     this.refrescarIconos();
   }
 
-  mensajeFun() {
+  async mensajeFun() {
+    this.mostrarDetalleProyecto = false;
+    this.mensaje = false;
+    this.mostrarContenidoG = false;
+    this.mostrarDetalle = false;
+    this.mostrarContenidoBuscar = false;
+    this.buscarP = false;
+    this.pro_dis = true;
+    this.mostrarFormularioSolicitud = false;
     this.mensaje = !this.mensaje;
+    if (this.mensaje) {
+      await this.cargarSolicitudesEnviadas();
+    }
     this.refrescarIconos();
   }
 
@@ -325,10 +377,31 @@ export class PortafolioProg implements OnInit, OnDestroy, AfterViewInit{
       this.router.navigate(['/login']);
       return;
     }
+
+    this.horariosProgramadorSeleccionado = programador.horarios || [];
     
     this.solicitudData.programadorId = programador.id;
+
+    if (this.horariosProgramadorSeleccionado.length === 1) {
+        this.solicitudData.horarioSeleccionado = this.formatearHorario(this.horariosProgramadorSeleccionado[0]);
+    } else {
+        this.solicitudData.horarioSeleccionado = '';
+    }
+    
     this.mostrarFormularioSolicitud = true;
+    this.mostrarDetalleProyecto = false;
+    this.mensaje = false;
+    this.mostrarContenidoG = false;
+    this.mostrarDetalle = false;
+    this.mostrarContenidoBuscar = false;
+    this.buscarP = false;
+    this.pro_dis = false;
     this.refrescarIconos();
+
+  }
+
+  formatearHorario(horario: any): string {
+      return `${horario.dia}: ${horario.horaInicio} - ${horario.horaFin}`;
   }
 
   async enviarSolicitud() {
@@ -338,20 +411,18 @@ export class PortafolioProg implements OnInit, OnDestroy, AfterViewInit{
     }
 
     try {
-      const colRef = collection(this.firestore, 'solicitudes'); // Nueva colección
+      const colRef = collection(this.firestore, 'solicitudes'); 
 
       const solicitud = {
         programadorId: this.solicitudData.programadorId,
         programadorNombre: this.portafoliosFirebase.find(p => p.id === this.solicitudData.programadorId)?.nombre,
-        
-        // Datos del usuario que solicita
+
         usuarioId: this.usuarioActual.uid,
         usuarioEmail: this.usuarioActual.email,
         
-        // Datos de la solicitud
         horario: this.solicitudData.horarioSeleccionado,
         mensaje: this.solicitudData.mensaje,
-        estado: 'Pendiente', // 'Pendiente', 'Aceptada', 'Rechazada'
+        estado: 'Pendiente', 
         fechaSolicitud: new Date()
       };
       
@@ -359,7 +430,6 @@ export class PortafolioProg implements OnInit, OnDestroy, AfterViewInit{
       
       alert(`Solicitud enviada al programador ${solicitud.programadorNombre} con éxito. ¡Pronto te responderán!`);
       
-      // Limpiar y cerrar
       this.solicitudData = { programadorId: '', horarioSeleccionado: '', mensaje: '' };
       this.mostrarFormularioSolicitud = false;
 
@@ -367,6 +437,29 @@ export class PortafolioProg implements OnInit, OnDestroy, AfterViewInit{
       console.error("Error al enviar la solicitud:", error);
       alert("Ocurrió un error al enviar la solicitud.");
     }
+  }
+
+  async cargarSolicitudesEnviadas() {
+    if (!this.usuarioActual) return;
+
+    await runInInjectionContext(this.injector, async () => {
+      const colRef = collection(this.firestore, 'solicitudes');
+      
+      
+      const q = query(colRef, where('usuarioId', '==', this.usuarioActual.uid)); 
+
+      this.solicitudesEnviadas = await firstValueFrom(
+        collectionData(q, { idField: 'id' })
+      );
+
+      this.solicitudesEnviadas.sort((a, b) => {
+          if (a.estado === 'Pendiente' && b.estado !== 'Pendiente') return -1;
+          if (a.estado !== 'Pendiente' && b.estado === 'Pendiente') return 1;
+          
+          return (b.fechaCreacion?.toMillis() || 0) - (a.fechaCreacion?.toMillis() || 0);
+      });
+
+    });
   }
 
   ngAfterViewInit(): void {
