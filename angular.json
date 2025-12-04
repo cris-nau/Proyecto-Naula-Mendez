@@ -17,6 +17,7 @@
           "build": {
             "builder": "@angular/build:application",
             "options": {
+              "outputPath": "dist/Proyecto_Integrador_Naula_Mendez",
               "browser": "src/main.ts",
               "polyfills": [
                 "zone.js"
