@@ -1,6 +1,6 @@
 {
   "hosting": {
-    "public": "dist",
+    "public": "dist/Proyecto_Integrador_Naula_Mendez",
     "ignore": [
       "firebase.json",
       "**/.*",
