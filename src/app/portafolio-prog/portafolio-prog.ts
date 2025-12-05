@@ -39,13 +39,13 @@ interface Horario {
 }
 
 interface ProgramadorCompleto { 
-  id: string; 
-  nombre: string;
-  foto: string;
-  contacto: string;
-  descripcion: string;
-  horarios?: Horario[]; 
-  especialidad?: string;
+  id: string; 
+  nombre: string;
+  foto: string;
+  contacto: string;
+  descripcion: string;
+  horarios?: Horario[]; 
+  especialidad?: string;
 }
 
 @Component({
@@ -223,10 +223,10 @@ export class PortafolioProg implements OnInit, OnDestroy, AfterViewInit{
   }
 
   buscar() {
-    const texto = this.text.toLowerCase().trim();
+    const texto = (this.text || '').toLowerCase().trim();
     this.resultados = this.portafoliosFirebase.filter(item =>
-      item.nombre.toLowerCase().includes(texto) ||
-      item.contacto.toLowerCase().includes(texto)
+      (item.nombre?.toLowerCase() || '').toLowerCase().includes(texto) ||
+      (item.contacto?.toLowerCase() || '').includes(texto)
     );
     this.refrescarIconos();
   }
