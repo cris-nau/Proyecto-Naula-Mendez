@@ -284,7 +284,7 @@
           
           @for (horario of horariosProgramadorSeleccionado; track $index) {
               <option [ngValue]="formatearHorario(horario)">
-                  {{ horario.dia }}: {{ horario.horaInicio }} - {{ horario.horaFin }}
+                  {{ horario.fecha }}: {{ horario.horaInicio }} - {{ horario.horaFin }}
               </option>
           }
       </select>
