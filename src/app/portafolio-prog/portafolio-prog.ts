@@ -401,7 +401,7 @@ export class PortafolioProg implements OnInit, OnDestroy, AfterViewInit{
   }
 
   formatearHorario(horario: any): string {
-      return `${horario.dia}: ${horario.horaInicio} - ${horario.horaFin}`;
+      return `${horario.fecha}: ${horario.horaInicio} - ${horario.horaFin}`;
   }
 
   async enviarSolicitud() {
