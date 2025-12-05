@@ -25,7 +25,7 @@ import { runInInjectionContext } from '@angular/core';
 import { createIcons, icons } from 'lucide';
 
 interface Horario {
-  dia: string;
+  fecha: string;
   horaInicio: string;
   horaFin: string;
 }
@@ -75,7 +75,7 @@ mostrarListaProgramadores: boolean = true;
   };
 
   nuevoHorario: Horario = {
-    dia: 'Lunes',
+    fecha: '',
     horaInicio: '',
     horaFin: ''
   };
@@ -167,8 +167,13 @@ mostrarListaProgramadores: boolean = true;
   }
 
   async guardarCambiosProgramador() {
-    if (!this.programadorSeleccionado.nombre || !this.programadorSeleccionado.email || !this.programadorSeleccionado.password) {
-        alert("Nombre, Email y Contraseña son obligatorios.");
+    if (!this.programadorSeleccionado.nombre || !this.programadorSeleccionado.email) {
+        alert("El Nombre y el Email son obligatorios.");
+        return;
+    }
+
+    if (!this.programadorSeleccionado.id && !this.programadorSeleccionado.password) {
+        alert("La contraseña es obligatoria para registrar un nuevo programador.");
         return;
     }
 
@@ -188,8 +193,7 @@ mostrarListaProgramadores: boolean = true;
             apellido: this.programadorSeleccionado.apellido,
             correo: this.programadorSeleccionado.email,
             foto: "https://i.pinimg.com/236x/9b/47/a0/9b47a023caf29f113237d61170f34ad9.jpg",
-            rol: 'programador', 
-            fechaRegistro: new Date()
+            rol: 'programador'
         };
 
 
@@ -205,7 +209,7 @@ mostrarListaProgramadores: boolean = true;
             const userCredential = await createUserWithEmailAndPassword(
                 auth,
                 this.programadorSeleccionado.email,
-                this.programadorSeleccionado.password 
+                this.programadorSeleccionado.password!
             );
             
             const newProgrammerUID = userCredential.user.uid;
@@ -265,14 +269,19 @@ mostrarListaProgramadores: boolean = true;
       activo: true,
       horarios: []
     };
-    this.nuevoHorario = { dia: 'Lunes', horaInicio: '', horaFin: '' };
+    this.nuevoHorario = { fecha: '', horaInicio: '', horaFin: '' };
   }
 
 
   agregarHorario() {
-    if (!this.nuevoHorario.horaInicio || !this.nuevoHorario.horaFin) {
-      alert("Debes seleccionar hora de inicio y fin.");
+    if (!this.nuevoHorario.fecha || !this.nuevoHorario.horaInicio || !this.nuevoHorario.horaFin) {
+      alert("Debes seleccionar una fecha, hora de inicio y hora de fin.");
       return;
+    }
+
+    if (this.nuevoHorario.horaInicio >= this.nuevoHorario.horaFin) {
+        alert("La hora de fin debe ser posterior a la hora de inicio.");
+        return;
     }
 
     this.programadorSeleccionado.horarios.push({ ...this.nuevoHorario });

@@ -119,21 +119,14 @@
         <hr>
 
         <h3>2. Horarios de Disponibilidad</h3>
-        <p class="nota-admin">Define los bloques de tiempo en los que este programador puede trabajar.</p>
+        <p class="nota-admin">Selecciona las fechas y horas específicas para las tutorías.</p>
 
         <div class="caja-agregar-horario">
             <div class="caja-horario-contenedor">
                 
                 <div class="campo-horario">
-                    <label>Día:</label>
-                    <select [(ngModel)]="nuevoHorario.dia">
-                        <option value="Lunes">Lunes</option>
-                        <option value="Martes">Martes</option>
-                        <option value="Miércoles">Miércoles</option>
-                        <option value="Jueves">Jueves</option>
-                        <option value="Viernes">Viernes</option>
-                        <option value="Sábado">Sábado</option>
-                    </select>
+                    <label>Fecha:</label>
+                    <input type="date" [(ngModel)]="nuevoHorario.fecha">
                 </div>
 
                 <div class="campo-horario">
@@ -168,7 +161,7 @@
                     <tbody>
                         @for (h of programadorSeleccionado.horarios; track $index) {
                             <tr style="border-bottom: 1px solid #ccc;">
-                                <td style="padding: 8px;">{{ h.dia }}</td>
+                                <td style="padding: 8px;">{{ h.fecha }}</td>
                                 <td>{{ h.horaInicio }}</td>
                                 <td>{{ h.horaFin }}</td>
                                 <td><a (click)="eliminarHorario($index)" class="eliminar"><i data-lucide="trash-2"></i></a></td>

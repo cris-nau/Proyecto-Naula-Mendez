@@ -1,6 +1,12 @@
 <main>
 <div class="login-container">
   <h2>Iniciar sesión</h2>
+
+  @if (errorMsg) {
+    <div class="mensaje-error">
+      <p>{{ errorMsg }}</p>
+    </div>
+  }
   
   <form (ngSubmit)="iniciarSesion()" #loginForm="ngForm">
     <div class="form-group">
@@ -12,7 +18,15 @@
         required
         [(ngModel)]="email"
         placeholder="ejemplo@correo.com"
+        #emailRef="ngModel"
+        [ngClass]="{
+          'input-error': emailRef.invalid && emailRef.touched,
+          'input-success': emailRef.valid && emailRef.touched
+        }"
       />
+      @if (emailRef.invalid && emailRef.touched) {
+        <span class="error-text">El correo es obligatorio.</span>
+      }
     </div>
 
     <div class="form-group">
@@ -24,7 +38,15 @@
         required
         [(ngModel)]="password"
         placeholder="•••••••••"
+        #passRef="ngModel"
+        [ngClass]="{
+          'input-error': passRef.invalid && passRef.touched,
+          'input-success': passRef.valid && passRef.touched
+        }"
       />
+      @if (passRef.invalid && passRef.touched) {
+        <span class="error-text">La contraseña es obligatoria.</span>
+      }
     </div>
 
     <button type="submit" [disabled]="!loginForm.valid">Ingresar</button>

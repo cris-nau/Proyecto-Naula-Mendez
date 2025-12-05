@@ -33,7 +33,7 @@ interface PortafolioItem {
 }
 
 interface Horario {
-  dia: string;
+  fecha: string;
   horaInicio: string;
   horaFin: string;
 }

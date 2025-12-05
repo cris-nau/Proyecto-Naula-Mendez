@@ -1,6 +1,7 @@
   import { Component } from '@angular/core';
   import { FormsModule } from '@angular/forms';
   import { auth } from '../firebase-config';
+  import { CommonModule } from '@angular/common';
   import { 
     getRedirectResult,
     signInWithRedirect,
@@ -18,7 +19,7 @@
 
   @Component({
     selector: 'app-inicio',
-    imports: [FormsModule, FirestoreModule],
+    imports: [FormsModule, FirestoreModule, CommonModule],
     templateUrl: './inicio.html',
     styleUrls: ['./inicio.scss'],
   })
@@ -33,8 +34,15 @@
     email: string = '';
     password: string = '';
 
+    errorMsg: string | null = null;
+
     async iniciarSesion() {
       if (!this.email || !this.password) return;
+
+      if (!this.email.trim() || !this.password.trim()) {
+        this.errorMsg = "Por favor completa todos los campos.";
+        return;
+      }
       
       try {
         const userCredential = await signInWithEmailAndPassword(auth, this.email, this.password);
@@ -42,8 +50,8 @@
 
         try {
           await user.reload();
-        } catch (error) {
-          console.warn("No se pudo recargar el perfil de Firebase Auth.", error);
+        } catch (error: any) {
+          this.errorMsg = error.message || "Error al iniciar sesión.";
         }
 
         await this.verificarRolEnFirestore(user.uid, user.email, user);

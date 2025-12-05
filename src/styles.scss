@@ -21,4 +21,19 @@ body {
   background: var(--color-bg-light);
   color: var(--color-text-light);
   line-height: 1.6;
+
+  body {
+  background: var(--color-bg-light);
+  color: var(--color-text-light);
+  line-height: 1.6;
+  padding: var(--spacing-medium);
+
+  @media (max-width: 480px) {
+    padding: var(--spacing-small);
+  }
+
+  @media (min-width: 1200px) {
+    padding: var(--spacing-large);
+  }
+}
 }

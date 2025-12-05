@@ -151,3 +151,55 @@ main {
     transform: translateY(0);
   }
 }
+
+.input-error {
+  border-color: #e63946 !important;
+  box-shadow: 0 0 4px rgba(230, 57, 70, 0.5);
+}
+
+.input-success {
+  border-color: #2a9d8f !important;
+  box-shadow: 0 0 4px rgba(42, 157, 143, 0.4);
+}
+
+
+.error-text {
+  color: #e63946;
+  font-size: 0.9rem;
+  margin-top: 3px;
+  display: block;
+}
+
+
+.two-inputs {
+  display: flex;
+  gap: 1rem;
+
+  @media (max-width: 600px) {
+    flex-direction: column;
+  }
+}
+
+
+.mensaje-exito {
+  background: #d4f8df;
+  padding: 1rem;
+  border-radius: 6px;
+  color: #2b8a3e;
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+.mensaje-error {
+  background: #ffdada;
+  padding: 1rem;
+  border-radius: 6px;
+  color: #c0392b;
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-5px); }
+  to   { opacity: 1; transform: translateY(0); }
+}

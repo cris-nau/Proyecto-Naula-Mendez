@@ -2,6 +2,18 @@
 <div class="login-container">
   <h2>Registrar</h2>
 
+  @if (mensajeExito) {
+    <div class="mensaje-exito">
+      <p>🎉 ¡Usuario registrado exitosamente!</p>
+    </div>
+  }
+
+  @if (errorMsg) {
+    <div class="mensaje-error">
+      <p>{{ errorMsg }}</p>
+    </div>
+  }
+
   <form (ngSubmit)="registrarCuenta()" #loginForm="ngForm">
     <div class="form-group">
       <label for="email">Correo electrónico</label>
@@ -11,8 +23,16 @@
         name="email"
         required
         [(ngModel)]="email"
+        #emailRef="ngModel"
         placeholder="ejemplo@correo.com"
+        [ngClass]="{
+          'input-error': emailRef.invalid && emailRef.touched,
+          'input-success': emailRef.valid && emailRef.touched
+        }"
       />
+      @if (emailRef.invalid && emailRef.touched) {
+        <span class="error-text">El correo es obligatorio.</span>
+      }
     </div>
 
     <div class="form-group">
@@ -24,7 +44,15 @@
         required
         [(ngModel)]="password"
         placeholder="•••••••••"
+        #passRef="ngModel"
+        [ngClass]="{
+          'input-error': passRef.invalid && passRef.touched,
+          'input-success': passRef.valid && passRef.touched
+        }"
       />
+      @if (passRef.invalid && passRef.touched) {
+        <span class="error-text">La contraseña es obligatoria.</span>
+      }
     </div>
 
     <div class="two-inputs">
@@ -36,7 +64,15 @@
         name="text"
         required
         [(ngModel)]="nombre"
+        #nombreRef="ngModel"
+        [ngClass]="{
+          'input-error': nombreRef.invalid && nombreRef.touched,
+          'input-success': nombreRef.valid && nombreRef.touched
+        }"
       />
+      @if (nombreRef.invalid && nombreRef.touched) {
+        <span class="error-text">El nombre es obligatorio.</span>
+      }
     </div>
 
     <div class="form-group-name">
@@ -47,7 +83,15 @@
         name="text"
         required
         [(ngModel)]="apellido"
+        #apellidoRef="ngModel"
+        [ngClass]="{
+          'input-error': apellidoRef.invalid && apellidoRef.touched,
+          'input-success': apellidoRef.valid && apellidoRef.touched
+        }"
       />
+      @if (apellidoRef.invalid && apellidoRef.touched) {
+        <span class="error-text">El apellido es obligatorio.</span>
+      }
     </div>
     </div>
 
